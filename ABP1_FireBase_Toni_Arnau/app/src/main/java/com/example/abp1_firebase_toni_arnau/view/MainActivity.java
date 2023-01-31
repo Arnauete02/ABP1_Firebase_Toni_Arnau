@@ -1,8 +1,10 @@
-package com.example.abp1_firebase_toni_arnau;
+package com.example.abp1_firebase_toni_arnau.view;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+
+import com.example.abp1_firebase_toni_arnau.R;
 
 public class MainActivity extends AppCompatActivity {
 
