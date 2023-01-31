@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">ABP1_FireBase_Toni_Arnau</string>
+    <string name="email">Email</string>
+    <string name="contraseña">Contraseña</string>
+    <string name="registro">Registro</string>
+    <string name="login">Login</string>
+    <string name="google">Google</string>
 </resources>
