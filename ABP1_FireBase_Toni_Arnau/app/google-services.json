@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "28931008152",
+    "project_id": "abp1-firebase-toni-arnau",
+    "storage_bucket": "abp1-firebase-toni-arnau.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:28931008152:android:628dfb777ffdf31bd892ed",
+        "android_client_info": {
+          "package_name": "com.example.abp1_firebase_toni_arnau"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "28931008152-jgtpdrmfpcdeoffse8luipdme6g3unn3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA_m7GAGlL6jm5EHqUweUs2M0ajC6g9xGg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "28931008152-jgtpdrmfpcdeoffse8luipdme6g3unn3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
