@@ -20,4 +20,12 @@
     <string name="winbomb">Partidas Ganadas Bomb:</string>
     <string name="ini">Inicios Session</string>
     <string name="datestam">Ultimo inicio de sesión:</string>
+
+    <string name="mail">Email:</string>
+    <string name="nom">Nombre:</string>
+    <string name="provider">Provider:</string>
+
+    <string name="guardar">Guardar:</string>
+
+
 </resources>
