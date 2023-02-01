@@ -43,6 +43,7 @@ public interface ControllerInterface {
     default boolean checkUserExists(DocumentSnapshot documentSnapshot) {
         return documentSnapshot.exists();
     }
+
     default void switchActivity(Activity from, Activity to) {
         switchActivity(from, to, "", null);
     }
