@@ -14,4 +14,10 @@
     <string name="perfilText">Perfil</string>
     <string name="polvora">polvora</string>
     <string name="paraula">Palabra</string>
+
+    <string name="sesion">Ultima Sesion:</string>
+    <string name="winword">Partidas ganadas Words:</string>
+    <string name="winbomb">Partidas Ganadas Bomb:</string>
+    <string name="ini">Inicios Session</string>
+    <string name="datestam">Ultimo inicio de sesión:</string>
 </resources>
