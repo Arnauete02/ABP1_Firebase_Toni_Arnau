@@ -1,3 +1,17 @@
 <resources>
     <string name="app_name">ABP1_FireBase_Toni_Arnau</string>
+    <string name="otro">otro</string>
+    <string name="stats">stats</string>
+    <string name="bomba">bomba</string>
+    <string name="palabras">palabras</string>
+    <string name="perfil">perfil</string>
+    <string name="logout">logout</string>
+    <string name="logoutText">Logout</string>
+    <string name="otrText">Extra</string>
+    <string name="statsText">Stats</string>
+    <string name="bombaText">Bomb!!</string>
+    <string name="wordsText">Words</string>
+    <string name="perfilText">Perfil</string>
+    <string name="polvora">polvora</string>
+    <string name="paraula">Palabra</string>
 </resources>
