@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="preloaded_fonts" translatable="false">
+        <item>@font/</item>
+        <item>@font/anton</item>
+        <item>@font/average</item>
+        <item>@font/chango</item>
+        <item>@font/lobster_two_bold_italic</item>
+        <item>@font/sarpanch_bold</item>
+        <item>@font/syncopate</item>
+        <item>@font/ultra</item>
+    </array>
+</resources>
