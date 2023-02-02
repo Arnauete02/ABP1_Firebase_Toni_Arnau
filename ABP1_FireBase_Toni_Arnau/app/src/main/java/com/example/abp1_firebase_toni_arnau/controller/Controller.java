@@ -1,13 +1,14 @@
 package com.example.abp1_firebase_toni_arnau.controller;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.view.View;
 import android.widget.Button;
 
 import androidx.annotation.NonNull;
 
 import com.example.abp1_firebase_toni_arnau.ExtraActivity;
-import com.example.abp1_firebase_toni_arnau.R;
-import com.example.abp1_firebase_toni_arnau.utils.Constants;
+import com.example.abp1_firebase_toni_arnau.utils.Providers;
 import com.example.abp1_firebase_toni_arnau.view.AhorcadoActivity;
 import com.example.abp1_firebase_toni_arnau.view.EstadisticasActivity;
 import com.example.abp1_firebase_toni_arnau.view.HomeActivity;
@@ -15,9 +16,6 @@ import com.example.abp1_firebase_toni_arnau.view.LoginActivity;
 import com.example.abp1_firebase_toni_arnau.view.MainActivity;
 import com.example.abp1_firebase_toni_arnau.view.ParaulogicActivity;
 import com.example.abp1_firebase_toni_arnau.view.PerfilActivity;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -45,6 +43,8 @@ public class Controller implements ControllerInterface{
     //Se instancia todas las activities en el constructor para prevenir nullPointers
     public Controller() {
         this.mainActivity = new MainActivity();
+        this.loginActivity = new LoginActivity();
+        this.homeActivity = new HomeActivity();
     }
 
     public void mainActivity(MainActivity mainActivity) {
@@ -88,11 +88,47 @@ public class Controller implements ControllerInterface{
         this.extraActivity.createAllItemsAsGlobalWithGetters();
     }
 
+    //SharedPreferences
+    private void saveSession() {
+        SharedPreferences.Editor prefs = this.loginActivity.getSharedPreferences(
+                "PREFERENCES_FILE_KEY", Context.MODE_PRIVATE).edit();
+        prefs.putString("email",this.loginActivity.getMail().getText().toString());
+        prefs.putString("provider", Providers.GOOGLE.toString());
+        prefs.apply();
+        switchActivity(this.loginActivity, this.homeActivity);
+    }
+
+    private void clearSession() {
+        SharedPreferences.Editor prefs = this.loginActivity.getSharedPreferences(
+                "PREFERENCES_FILE_KEY", Context.MODE_PRIVATE).edit();
+        prefs.clear();
+        prefs.apply();
+        switchActivity(this.homeActivity, this.mainActivity);
+    }
+
+    /*private boolean checkSession () {
+        SharedPreferences prefs = this.loginActivity.getSharedPreferences(
+                this.loginActivity.getString(R.string.prefs_files), Context.MODE_PRIVATE);
+        String email = prefs.getString("email", null);
+        String provider = prefs.getString("provider", null);
+        if (email != null) {
+            //Email encontrado
+            return true;
+        }
+        //Email no encontrado
+        return false;
+    }*/
+
     @Override
     public void createActivityButtons() {
+        //Declaración de variables
         Button registerButton = this.loginActivity.getRegisterButton();
         Button loginButton = this.loginActivity.getLoginButton();
         Button googleButton = this.loginActivity.getGoogleButton();
+
+        //LoginActivity Event's
+        SharedPreferences prefs = this.loginActivity.getSharedPreferences(
+                "PREFERENCES_FILE_KEY", Context.MODE_PRIVATE);
 
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -108,14 +144,14 @@ public class Controller implements ControllerInterface{
                                 @Override
                                 public void onComplete(@NonNull Task<AuthResult> task) {
                                     if (task.isSuccessful()) {
-                                        //TODO: código cuando el login es correcto.
+                                        saveSession();
                                     } else {
-                                        //TODO: código cuando el login no es correcto.
+                                        showAlert(loginActivity, "El correo ya está registrado.");
                                     }
                                 }
                             });
                 } else {
-                    showAlert(loginActivity, "Error en el login");
+                    showAlert(loginActivity, "Error en el registro.");
                 }
             }
         });
@@ -134,15 +170,15 @@ public class Controller implements ControllerInterface{
                                 @Override
                                 public void onComplete(@NonNull Task<AuthResult> task) {
                                     if (task.isSuccessful()) {
-                                        //TODO: código cuando el login es correcto.
+                                        saveSession();
                                     } else {
-                                        //TODO: código cuando el login no es correcto.
+                                        showAlert(loginActivity, "Error en el login.");
                                     }
 
                                 }
                             });
                 } else {
-                    showAlert(loginActivity, "Error en el login");
+                    showAlert(loginActivity, "Error en el login.");
                 }
             }
         });
