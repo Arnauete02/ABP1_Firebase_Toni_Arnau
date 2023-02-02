@@ -1,5 +1,7 @@
 package com.example.abp1_firebase_toni_arnau.controller;
 
+import static android.provider.Settings.System.getString;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.view.View;
@@ -8,6 +10,7 @@ import android.widget.Button;
 import androidx.annotation.NonNull;
 
 import com.example.abp1_firebase_toni_arnau.ExtraActivity;
+import com.example.abp1_firebase_toni_arnau.R;
 import com.example.abp1_firebase_toni_arnau.utils.Providers;
 import com.example.abp1_firebase_toni_arnau.view.AhorcadoActivity;
 import com.example.abp1_firebase_toni_arnau.view.EstadisticasActivity;
@@ -16,6 +19,9 @@ import com.example.abp1_firebase_toni_arnau.view.LoginActivity;
 import com.example.abp1_firebase_toni_arnau.view.MainActivity;
 import com.example.abp1_firebase_toni_arnau.view.ParaulogicActivity;
 import com.example.abp1_firebase_toni_arnau.view.PerfilActivity;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -186,7 +192,15 @@ public class Controller implements ControllerInterface{
         googleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                GoogleSignInOptions googleConf = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                        .requestIdToken(getString(R.string.default_web_client_id))
+                        .requestEmail()
+                        .build();
 
+                GoogleSignInClient googleCliet = GoogleSignIn.getClient(this, googleConf);
+
+                //cerramos el cliente
+                googleCliet.signOut();
             }
         });
     }
