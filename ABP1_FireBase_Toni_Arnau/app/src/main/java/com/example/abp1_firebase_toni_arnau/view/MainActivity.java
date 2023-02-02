@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements ViewActivity {
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override
             public void run() {
-                Intent intent = new Intent(MainActivity.this, Splash_v2.class);
+                Intent intent = new Intent(MainActivity.this, SplashActivity.class);
 
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
                     ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(
