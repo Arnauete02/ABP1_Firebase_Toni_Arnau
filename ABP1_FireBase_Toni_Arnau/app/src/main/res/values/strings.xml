@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">ABP1_FireBase_Toni_Arnau</string>
+
+    <string name="splash_titulo">Nauto Games</string>
+    <string name="splash_subtit">Palabras para jugar</string>
+    <string name="rubik">rubik</string>
+
 </resources>

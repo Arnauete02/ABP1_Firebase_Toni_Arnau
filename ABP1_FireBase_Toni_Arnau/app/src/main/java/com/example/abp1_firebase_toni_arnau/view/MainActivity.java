@@ -1,6 +1,13 @@
 package com.example.abp1_firebase_toni_arnau.view;
 
+import android.app.ActivityOptions;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Pair;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -8,6 +15,9 @@ import com.example.abp1_firebase_toni_arnau.R;
 import com.example.abp1_firebase_toni_arnau.controller.Controller;
 
 public class MainActivity extends AppCompatActivity implements ViewActivity {
+    private ImageView imageView;
+    private TextView textView;
+    private TextView textView1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,6 +33,29 @@ public class MainActivity extends AppCompatActivity implements ViewActivity {
         setContentView(R.layout.activity_main);
 
         callControllerWithThisActivityAsParameter();
+
+        //HOOK
+        imageView = findViewById(R.id.img_rub);
+        textView = findViewById(R.id.txt_nom);
+        textView1 = findViewById(R.id.text_slogan);
+
+        //SPLASH
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Intent intent = new Intent(MainActivity.this, Splash_v2.class);
+
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                    ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(
+                            MainActivity.this,
+                            Pair.create(imageView, imageView.getTransitionName()),
+                            Pair.create(textView, textView.getTransitionName()),
+                            Pair.create(textView1, textView1.getTransitionName())
+                    );
+                    startActivity(intent,options.toBundle());
+                }
+            }
+        },2000);
     }
 
     @Override
