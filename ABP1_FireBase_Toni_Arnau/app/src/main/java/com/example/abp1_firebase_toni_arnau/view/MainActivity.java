@@ -33,29 +33,6 @@ public class MainActivity extends AppCompatActivity implements ViewActivity {
         setContentView(R.layout.activity_main);
 
         callControllerWithThisActivityAsParameter();
-
-        //HOOK
-        imageView = findViewById(R.id.img_rub);
-        textView = findViewById(R.id.txt_nom);
-        textView1 = findViewById(R.id.text_slogan);
-
-        //SPLASH
-        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Intent intent = new Intent(MainActivity.this, SplashActivity.class);
-
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                    ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(
-                            MainActivity.this,
-                            Pair.create(imageView, imageView.getTransitionName()),
-                            Pair.create(textView, textView.getTransitionName()),
-                            Pair.create(textView1, textView1.getTransitionName())
-                    );
-                    startActivity(intent,options.toBundle());
-                }
-            }
-        },2000);
     }
 
     @Override
@@ -65,6 +42,20 @@ public class MainActivity extends AppCompatActivity implements ViewActivity {
 
     @Override
     public void createAllItemsAsGlobalWithGetters() {
+        imageView = findViewById(R.id.img_rub);
+        textView = findViewById(R.id.txt_nom);
+        textView1 = findViewById(R.id.text_slogan);
+    }
 
+    public ImageView getImageView() {
+        return imageView;
+    }
+
+    public TextView getTextView() {
+        return textView;
+    }
+
+    public TextView getTextView1() {
+        return textView1;
     }
 }

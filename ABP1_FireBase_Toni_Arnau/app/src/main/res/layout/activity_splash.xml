@@ -21,6 +21,7 @@
             android:id="@+id/txt_nom"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="-100dp"
             android:layout_weight="1"
             android:fontFamily="@font/lobster_two_bold_italic"
             android:gravity="center"
@@ -30,7 +31,7 @@
             android:textColor="@color/primaryDarkColor"
             android:textSize="34sp"
             android:textStyle="bold"
-            android:transitionName="txt_nom_empresa"/>
+            android:transitionName="txt_nom_empresa" />
 
         <ImageView
             android:id="@+id/img_rub"
@@ -38,15 +39,17 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="-100dp"
             android:layout_weight="1"
+            android:alpha="0"
             android:contentDescription="@string/rubik"
             android:scaleType="centerInside"
-            app:srcCompat="@drawable/rubik"
-            android:transitionName="img_rubik"/>
+            android:transitionName="img_rubik"
+            app:srcCompat="@drawable/rubik" />
 
         <TextView
             android:id="@+id/text_slogan"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="-600dp"
             android:layout_marginTop="-200dp"
             android:layout_weight="1"
             android:fontFamily="@font/lobster"
@@ -54,6 +57,6 @@
             android:text="@string/splash_subtit"
             android:textColor="@color/primaryDarkColor"
             android:textSize="20sp"
-            android:transitionName="txt_slogan"/>
+            android:transitionName="txt_slogan" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

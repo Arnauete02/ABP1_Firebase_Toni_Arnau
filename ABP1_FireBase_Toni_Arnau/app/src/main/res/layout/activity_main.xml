@@ -21,7 +21,6 @@
             android:id="@+id/txt_nom"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="-100dp"
             android:layout_weight="1"
             android:fontFamily="@font/lobster_two_bold_italic"
             android:gravity="center"
@@ -39,7 +38,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="-100dp"
             android:layout_weight="1"
-            android:alpha="0"
             android:contentDescription="@string/rubik"
             android:scaleType="centerInside"
             android:transitionName="img_rubik"
@@ -49,7 +47,6 @@
             android:id="@+id/text_slogan"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="-600dp"
             android:layout_marginTop="-200dp"
             android:layout_weight="1"
             android:fontFamily="@font/lobster"
@@ -59,5 +56,4 @@
             android:textSize="20sp"
             android:transitionName="txt_slogan" />
     </LinearLayout>
-
 </androidx.constraintlayout.widget.ConstraintLayout>
