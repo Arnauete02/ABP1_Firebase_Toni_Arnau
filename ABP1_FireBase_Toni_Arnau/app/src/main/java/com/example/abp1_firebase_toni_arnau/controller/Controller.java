@@ -11,7 +11,6 @@ import com.example.abp1_firebase_toni_arnau.view.LoginActivity;
 import com.example.abp1_firebase_toni_arnau.view.MainActivity;
 import com.example.abp1_firebase_toni_arnau.view.ParaulogicActivity;
 import com.example.abp1_firebase_toni_arnau.view.PerfilActivity;
-import com.google.firebase.auth.FirebaseAuth;
 
 public class Controller implements ControllerInterface{
     //Definición de todas las activities como variables globales
