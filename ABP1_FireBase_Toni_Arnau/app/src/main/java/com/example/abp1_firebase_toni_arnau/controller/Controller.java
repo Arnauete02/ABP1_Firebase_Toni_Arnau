@@ -91,7 +91,7 @@ public class Controller implements ControllerInterface{
         this.homeActivity.getBotonLogout().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FirebaseAuth.getInstance().signOut();
+                //FirebaseAuth.getInstance().signOut();
                 switchActivity(homeActivity, loginActivity);
                 //Eliminar fichero SharedPreferences
             }
