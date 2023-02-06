@@ -43,6 +43,7 @@ public class Controller implements ControllerInterface{
     public void mainActivity(MainActivity mainActivity) {
         this.mainActivity = mainActivity;
         this.mainActivity.createAllItemsAsGlobalWithGetters();
+        switchActivity(this.mainActivity, this.loginActivity);
     }
 
     public void loginActivity(LoginActivity loginActivity) {
