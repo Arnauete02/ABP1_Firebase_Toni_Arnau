@@ -13,4 +13,9 @@
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
     </style>
+
+    <style name="Splash" parent="Theme.ABP1_FireBase_Toni_Arnau">
+        <item name="android:windowBackground">@drawable/rubik</item>
+    </style>
+
 </resources>
