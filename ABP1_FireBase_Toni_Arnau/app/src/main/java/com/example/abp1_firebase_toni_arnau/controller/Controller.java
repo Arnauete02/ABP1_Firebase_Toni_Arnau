@@ -1,5 +1,8 @@
 package com.example.abp1_firebase_toni_arnau.controller;
 
+import android.view.View;
+import android.widget.Button;
+
 import com.example.abp1_firebase_toni_arnau.ExtraActivity;
 import com.example.abp1_firebase_toni_arnau.view.AhorcadoActivity;
 import com.example.abp1_firebase_toni_arnau.view.EstadisticasActivity;
@@ -54,6 +57,7 @@ public class Controller implements ControllerInterface{
     public void homeActivity(HomeActivity homeActivity) {
         this.homeActivity = homeActivity;
         this.homeActivity.createAllItemsAsGlobalWithGetters();
+        createActivityButtons();
     }
 
     public void ahorcadoActivity(AhorcadoActivity ahorcadoActivity) {
@@ -83,6 +87,52 @@ public class Controller implements ControllerInterface{
 
     @Override
     public void createActivityButtons() {
+        this.homeActivity.getBotonLogout().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //FirebaseAuth.getInstance().signOut();
+                switchActivity(homeActivity, loginActivity);
+                //Eliminar fichero SharedPreferences
+            }
+        });
+
+        this.homeActivity.getBotonAhorcado().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                switchActivity(homeActivity, ahorcadoActivity);
+            }
+        });
+
+        this.homeActivity.getBotonLetras().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                switchActivity(homeActivity, extraActivity);
+            }
+        });
+
+        this.homeActivity.getBotonPalabra().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                switchActivity(homeActivity, paraulogicActivity);
+            }
+        });
+
+        this.homeActivity.getBotonPeril().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                switchActivity(homeActivity, perfilActivity);
+            }
+        });
+
+        this.homeActivity.getBotonStats().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                switchActivity(homeActivity, estadisticasActivity);
+            }
+        });
+
+
+
 
     }
 }
