@@ -31,6 +31,13 @@ public class Controller implements ControllerInterface{
     //Se instancia todas las activities en el constructor para prevenir nullPointers
     public Controller() {
         this.mainActivity = new MainActivity();
+        this.loginActivity = new LoginActivity();
+        this.homeActivity = new HomeActivity();
+        this.ahorcadoActivity = new AhorcadoActivity();
+        this.paraulogicActivity = new ParaulogicActivity();
+        this.perfilActivity = new PerfilActivity();
+        this.estadisticasActivity = new EstadisticasActivity();
+        this.extraActivity = new ExtraActivity();
     }
 
     public void mainActivity(MainActivity mainActivity) {
