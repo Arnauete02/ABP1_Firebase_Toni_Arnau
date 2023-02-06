@@ -2,15 +2,24 @@ package com.example.abp1_firebase_toni_arnau.controller;
 
 import static android.provider.Settings.System.getString;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.example.abp1_firebase_toni_arnau.ExtraActivity;
 import com.example.abp1_firebase_toni_arnau.R;
+import com.example.abp1_firebase_toni_arnau.utils.Constants;
 import com.example.abp1_firebase_toni_arnau.utils.Providers;
 import com.example.abp1_firebase_toni_arnau.view.AhorcadoActivity;
 import com.example.abp1_firebase_toni_arnau.view.EstadisticasActivity;
@@ -20,12 +29,16 @@ import com.example.abp1_firebase_toni_arnau.view.MainActivity;
 import com.example.abp1_firebase_toni_arnau.view.ParaulogicActivity;
 import com.example.abp1_firebase_toni_arnau.view.PerfilActivity;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.GoogleAuthProvider;
 
 public class Controller implements ControllerInterface{
     //Definición de todas las activities como variables globales
@@ -131,6 +144,7 @@ public class Controller implements ControllerInterface{
         Button registerButton = this.loginActivity.getRegisterButton();
         Button loginButton = this.loginActivity.getLoginButton();
         Button googleButton = this.loginActivity.getGoogleButton();
+        TextView mail = this.loginActivity.getMail();
 
         //LoginActivity Event's
         SharedPreferences prefs = this.loginActivity.getSharedPreferences(
@@ -189,7 +203,7 @@ public class Controller implements ControllerInterface{
             }
         });
 
-        googleButton.setOnClickListener(new View.OnClickListener() {
+        /*googleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 GoogleSignInOptions googleConf = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -197,11 +211,12 @@ public class Controller implements ControllerInterface{
                         .requestEmail()
                         .build();
 
-                GoogleSignInClient googleCliet = GoogleSignIn.getClient(this, googleConf);
+                GoogleSignInClient googleClient = GoogleSignIn.getClient(this, googleConf);
 
-                //cerramos el cliente
-                googleCliet.signOut();
+                googleClient.signOut();
+
+                loginActivity.startActivityForResult(googleClient.getSignInIntent(), Constants.GOOGLE_SIGN_IN);
             }
-        });
+        });*/
     }
 }
