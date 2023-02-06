@@ -64,11 +64,17 @@ public class Controller implements ControllerInterface{
         this.mainActivity = new MainActivity();
         this.loginActivity = new LoginActivity();
         this.homeActivity = new HomeActivity();
+        this.ahorcadoActivity = new AhorcadoActivity();
+        this.paraulogicActivity = new ParaulogicActivity();
+        this.perfilActivity = new PerfilActivity();
+        this.estadisticasActivity = new EstadisticasActivity();
+        this.extraActivity = new ExtraActivity();
     }
 
     public void mainActivity(MainActivity mainActivity) {
         this.mainActivity = mainActivity;
         this.mainActivity.createAllItemsAsGlobalWithGetters();
+        switchActivity(this.mainActivity, this.loginActivity);
     }
 
     public void loginActivity(LoginActivity loginActivity) {

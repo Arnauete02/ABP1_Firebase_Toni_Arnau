@@ -5,4 +5,20 @@
     <string name="registro">Registro</string>
     <string name="login">Login</string>
     <string name="google">Google</string>
+    <string name="otro">otro</string>
+    <string name="stats">stats</string>
+    <string name="bomba">bomba</string>
+    <string name="palabras">palabras</string>
+    <string name="perfil">perfil</string>
+    <string name="logout">logout</string>
+    <string name="logoutText">Logout</string>
+    <string name="otrText">Extra</string>
+    <string name="statsText">Stats</string>
+    <string name="bombaText">Bomb!!</string>
+    <string name="wordsText">Words</string>
+    <string name="perfilText">Perfil</string>
+
+    <string name="splash_titulo">Nauto Games</string>
+    <string name="splash_subtit">Palabras para jugar</string>
+    <string name="rubik">rubik</string>
 </resources>
