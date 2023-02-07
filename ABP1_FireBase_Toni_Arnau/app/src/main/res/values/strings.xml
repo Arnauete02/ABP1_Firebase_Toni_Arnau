@@ -18,6 +18,16 @@
     <string name="wordsText">Words</string>
     <string name="perfilText">Perfil</string>
 
+    <string name="perfilNom">Nombre</string>
+    <string name="perfilMail">E-mail</string>
+    <string name="perfilUserName">Alias</string>
+    <string name="buttonPerfil">Guardar Cambios</string>
+
+    <string name="ganadasAhorcado">Partidas Ganadas al Ahorcado:</string>
+    <string name="ganadasParaulogic">Partidas Ganadas al Paraulogic:</string>
+    <string name="inicioSesion">Número de Inicios de Sesión:</string>
+    <string name="ultimaSesion">Fecha de la última Sesión:</string>
+
     <string name="splash_titulo">Nauto Games</string>
     <string name="splash_subtit">Palabras para jugar</string>
     <string name="rubik">rubik</string>
