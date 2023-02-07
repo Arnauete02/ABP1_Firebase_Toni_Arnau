@@ -3,6 +3,7 @@ package com.example.abp1_firebase_toni_arnau.view;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 
@@ -40,6 +41,10 @@ public class HomeActivity extends AppCompatActivity implements ViewActivity {
         botonStats = findViewById(R.id.buttonStats);
     }
 
+    @Override
+    public void onBackPressed() {
+        super.finishAffinity();
+    }
 
     public Button getBotonLogout() {
         return botonLogout;
