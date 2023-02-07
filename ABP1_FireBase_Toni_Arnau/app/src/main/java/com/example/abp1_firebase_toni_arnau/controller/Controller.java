@@ -1,14 +1,22 @@
 package com.example.abp1_firebase_toni_arnau.controller;
 
+import static android.provider.Settings.System.getString;
+
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 
-import com.example.abp1_firebase_toni_arnau.ExtraActivity;
+import com.example.abp1_firebase_toni_arnau.R;
+import com.example.abp1_firebase_toni_arnau.utils.Constants;
+import com.example.abp1_firebase_toni_arnau.view.ExtraActivity;
 import com.example.abp1_firebase_toni_arnau.utils.Providers;
 import com.example.abp1_firebase_toni_arnau.view.AhorcadoActivity;
 import com.example.abp1_firebase_toni_arnau.view.EstadisticasActivity;
@@ -17,12 +25,19 @@ import com.example.abp1_firebase_toni_arnau.view.LoginActivity;
 import com.example.abp1_firebase_toni_arnau.view.MainActivity;
 import com.example.abp1_firebase_toni_arnau.view.ParaulogicActivity;
 import com.example.abp1_firebase_toni_arnau.view.PerfilActivity;
+import com.google.android.gms.auth.api.identity.BeginSignInRequest;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class Controller implements ControllerInterface{
+    public static final String default_web_client_id = "28931008152-jgtpdrmfpcdeoffse8luipdme6g3unn3.apps.googleusercontent.com";
+
     //Definición de todas las activities como variables globales
     private MainActivity mainActivity;
     private LoginActivity loginActivity;
@@ -62,13 +77,13 @@ public class Controller implements ControllerInterface{
     public void loginActivity(LoginActivity loginActivity) {
         this.loginActivity = loginActivity;
         this.loginActivity.createAllItemsAsGlobalWithGetters();
-        createActivityButtons();
+        createActivityButtons(loginActivity);
     }
 
     public void homeActivity(HomeActivity homeActivity) {
         this.homeActivity = homeActivity;
         this.homeActivity.createAllItemsAsGlobalWithGetters();
-        createActivityButtons();
+        createActivityButtons(homeActivity);
     }
 
     public void ahorcadoActivity(AhorcadoActivity ahorcadoActivity) {
@@ -97,11 +112,11 @@ public class Controller implements ControllerInterface{
     }
 
     //SharedPreferences
-    private void saveSession() {
+    private void saveSession(Providers provider) {
         SharedPreferences.Editor prefs = this.loginActivity.getSharedPreferences(
                 "PREFERENCES_FILE_KEY", Context.MODE_PRIVATE).edit();
-        prefs.putString("email",this.loginActivity.getMail().getText().toString());
-        prefs.putString("provider", Providers.GOOGLE.toString());
+        prefs.putString("email", this.loginActivity.getMail().getText().toString());
+        prefs.putString("provider", provider.toString());
         prefs.apply();
         switchActivity(this.loginActivity, this.homeActivity);
     }
@@ -114,31 +129,27 @@ public class Controller implements ControllerInterface{
         switchActivity(this.homeActivity, this.mainActivity);
     }
 
-    /*private boolean checkSession () {
-        SharedPreferences prefs = this.loginActivity.getSharedPreferences(
-                this.loginActivity.getString(R.string.prefs_files), Context.MODE_PRIVATE);
+    private boolean checkSession () {
+        SharedPreferences prefs = this.loginActivity.getSharedPreferences("PREFERENCES_FILE_KEY", Context.MODE_PRIVATE);
         String email = prefs.getString("email", null);
         String provider = prefs.getString("provider", null);
         if (email != null) {
-            //Email encontrado
             return true;
         }
-        //Email no encontrado
         return false;
-    }*/
+    }
 
     @Override
-    public void createActivityButtons() {
-        //Declaración de variables
-        Button registerButton = this.loginActivity.getRegisterButton();
-        Button loginButton = this.loginActivity.getLoginButton();
-        Button googleButton = this.loginActivity.getGoogleButton();
+    public void createActivityButtons(Activity activity) {
+        if (activity == this.loginActivity) {
+            SharedPreferences prefs = this.loginActivity.getSharedPreferences(
+                    "PREFERENCES_FILE_KEY", Context.MODE_PRIVATE);
 
-        //LoginActivity Event's
-        SharedPreferences prefs = this.loginActivity.getSharedPreferences(
-               "PREFERENCES_FILE_KEY", Context.MODE_PRIVATE);
+            if (checkSession()) {
+                switchActivity(this.loginActivity, this.homeActivity);
+            }
 
-        this.loginActivity.getRegisterButton().setOnClickListener(new View.OnClickListener() {
+            this.loginActivity.getRegisterButton().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     String mail = loginActivity.getMail().getText().toString();
@@ -152,7 +163,7 @@ public class Controller implements ControllerInterface{
                                     @Override
                                     public void onComplete(@NonNull Task<AuthResult> task) {
                                         if (task.isSuccessful()) {
-                                            saveSession();
+                                            saveSession(Providers.LOGIN);
                                         } else {
                                             showAlert(loginActivity, "El correo ya está registrado.");
                                         }
@@ -164,7 +175,7 @@ public class Controller implements ControllerInterface{
                 }
             });
 
-        this.loginActivity.getLoginButton().setOnClickListener(new View.OnClickListener() {
+            this.loginActivity.getLoginButton().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     String mail = loginActivity.getMail().getText().toString();
@@ -178,7 +189,7 @@ public class Controller implements ControllerInterface{
                                     @Override
                                     public void onComplete(@NonNull Task<AuthResult> task) {
                                         if (task.isSuccessful()) {
-                                            saveSession();
+                                            saveSession(Providers.LOGIN);
                                         } else {
                                             showAlert(loginActivity, "Error en el login.");
                                         }
@@ -191,64 +202,57 @@ public class Controller implements ControllerInterface{
                 }
             });
 
-        /*this.loginActivity.getGoogleButton().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                GoogleSignInOptions googleConf = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                        .requestIdToken(getString(R.string.default_web_client_id))
-                        .requestEmail()
-                        .build();
+            this.loginActivity.getGoogleButton().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
 
-                GoogleSignInClient googleClient = GoogleSignIn.getClient(this, googleConf);
-
-                googleClient.signOut();
-
-                loginActivity.startActivityForResult(googleClient.getSignInIntent(), Constants.GOOGLE_SIGN_IN);
-            }
-        });*/
-
-        this.homeActivity.getBotonLogout().setOnClickListener(new View.OnClickListener() {
+                }
+            });
+        } else {
+            this.homeActivity.getBotonLogout().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    //FirebaseAuth.getInstance().signOut();
+                    FirebaseAuth.getInstance().signOut();
+                    clearSession();
                     switchActivity(homeActivity, loginActivity);
-                    //Eliminar fichero SharedPreferences
                 }
             });
 
-        this.homeActivity.getBotonAhorcado().setOnClickListener(new View.OnClickListener() {
+            this.homeActivity.getBotonAhorcado().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     switchActivity(homeActivity, ahorcadoActivity);
                 }
             });
 
-        this.homeActivity.getBotonLetras().setOnClickListener(new View.OnClickListener() {
+            this.homeActivity.getBotonLetras().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     switchActivity(homeActivity, extraActivity);
                 }
             });
 
-        this.homeActivity.getBotonPalabra().setOnClickListener(new View.OnClickListener() {
+            this.homeActivity.getBotonPalabra().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     switchActivity(homeActivity, paraulogicActivity);
                 }
             });
 
-        this.homeActivity.getBotonPeril().setOnClickListener(new View.OnClickListener() {
+            this.homeActivity.getBotonPeril().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     switchActivity(homeActivity, perfilActivity);
                 }
             });
 
-        this.homeActivity.getBotonStats().setOnClickListener(new View.OnClickListener() {
+            this.homeActivity.getBotonStats().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     switchActivity(homeActivity, estadisticasActivity);
                 }
             });
+        }
     }
+
 }

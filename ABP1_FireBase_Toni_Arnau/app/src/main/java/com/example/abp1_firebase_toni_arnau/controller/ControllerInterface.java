@@ -10,7 +10,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import java.io.Serializable;
 
 public interface ControllerInterface {
-    void createActivityButtons();
+    void createActivityButtons(Activity activity);
     
     default String ifNullString(Object o) {
         if (o == null) return "";
