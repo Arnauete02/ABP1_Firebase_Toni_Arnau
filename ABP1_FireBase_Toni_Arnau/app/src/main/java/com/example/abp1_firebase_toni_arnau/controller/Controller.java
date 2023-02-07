@@ -1,28 +1,14 @@
 package com.example.abp1_firebase_toni_arnau.controller;
 
-import static android.provider.Settings.System.getString;
-
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import android.view.View;
-import android.widget.Button;
 
 import com.example.abp1_firebase_toni_arnau.ExtraActivity;
-import com.example.abp1_firebase_toni_arnau.R;
-import com.example.abp1_firebase_toni_arnau.utils.Constants;
 import com.example.abp1_firebase_toni_arnau.utils.Providers;
 import com.example.abp1_firebase_toni_arnau.view.AhorcadoActivity;
 import com.example.abp1_firebase_toni_arnau.view.EstadisticasActivity;
@@ -31,17 +17,10 @@ import com.example.abp1_firebase_toni_arnau.view.LoginActivity;
 import com.example.abp1_firebase_toni_arnau.view.MainActivity;
 import com.example.abp1_firebase_toni_arnau.view.ParaulogicActivity;
 import com.example.abp1_firebase_toni_arnau.view.PerfilActivity;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.GoogleAuthProvider;
 
 public class Controller implements ControllerInterface{
     //Definición de todas las activities como variables globales
@@ -150,116 +129,69 @@ public class Controller implements ControllerInterface{
 
     @Override
     public void createActivityButtons() {
-        this.homeActivity.getBotonLogout().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //FirebaseAuth.getInstance().signOut();
-                switchActivity(homeActivity, loginActivity);
-                //Eliminar fichero SharedPreferences
-            }
-        });
-
-        this.homeActivity.getBotonAhorcado().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                switchActivity(homeActivity, ahorcadoActivity);
-            }
-        });
-
-        this.homeActivity.getBotonLetras().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                switchActivity(homeActivity, extraActivity);
-            }
-        });
-
-        this.homeActivity.getBotonPalabra().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                switchActivity(homeActivity, paraulogicActivity);
-            }
-        });
-
-        this.homeActivity.getBotonPeril().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                switchActivity(homeActivity, perfilActivity);
-            }
-        });
-
-        this.homeActivity.getBotonStats().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                switchActivity(homeActivity, estadisticasActivity);
-            }
-        });
-
-
-
         //Declaración de variables
         Button registerButton = this.loginActivity.getRegisterButton();
         Button loginButton = this.loginActivity.getLoginButton();
         Button googleButton = this.loginActivity.getGoogleButton();
-        TextView mail = this.loginActivity.getMail();
 
         //LoginActivity Event's
         SharedPreferences prefs = this.loginActivity.getSharedPreferences(
-                "PREFERENCES_FILE_KEY", Context.MODE_PRIVATE);
+               "PREFERENCES_FILE_KEY", Context.MODE_PRIVATE);
 
-        registerButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String mail = loginActivity.getMail().getText().toString();
-                String password = loginActivity.getPassword().getText().toString();
+        this.loginActivity.getRegisterButton().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String mail = loginActivity.getMail().getText().toString();
+                    String password = loginActivity.getPassword().getText().toString();
 
-                if (!mail.isEmpty() && !password.isEmpty()) {
+                    if (!mail.isEmpty() && !password.isEmpty()) {
 
-                    FirebaseAuth.getInstance()
-                            .createUserWithEmailAndPassword(mail, password)
-                            .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                                @Override
-                                public void onComplete(@NonNull Task<AuthResult> task) {
-                                    if (task.isSuccessful()) {
-                                        saveSession();
-                                    } else {
-                                        showAlert(loginActivity, "El correo ya está registrado.");
+                        FirebaseAuth.getInstance()
+                                .createUserWithEmailAndPassword(mail, password)
+                                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<AuthResult> task) {
+                                        if (task.isSuccessful()) {
+                                            saveSession();
+                                        } else {
+                                            showAlert(loginActivity, "El correo ya está registrado.");
+                                        }
                                     }
-                                }
-                            });
-                } else {
-                    showAlert(loginActivity, "Error en el registro.");
+                                });
+                    } else {
+                        showAlert(loginActivity, "Error en el registro.");
+                    }
                 }
-            }
-        });
+            });
 
-        loginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String mail = loginActivity.getMail().getText().toString();
-                String password = loginActivity.getPassword().getText().toString();
+        this.loginActivity.getLoginButton().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String mail = loginActivity.getMail().getText().toString();
+                    String password = loginActivity.getPassword().getText().toString();
 
-                if (!mail.isEmpty() && !password.isEmpty()) {
+                    if (!mail.isEmpty() && !password.isEmpty()) {
 
-                    FirebaseAuth.getInstance()
-                            .signInWithEmailAndPassword(mail, password)
-                            .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                                @Override
-                                public void onComplete(@NonNull Task<AuthResult> task) {
-                                    if (task.isSuccessful()) {
-                                        saveSession();
-                                    } else {
-                                        showAlert(loginActivity, "Error en el login.");
+                        FirebaseAuth.getInstance()
+                                .signInWithEmailAndPassword(mail, password)
+                                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<AuthResult> task) {
+                                        if (task.isSuccessful()) {
+                                            saveSession();
+                                        } else {
+                                            showAlert(loginActivity, "Error en el login.");
+                                        }
+
                                     }
-
-                                }
-                            });
-                } else {
-                    showAlert(loginActivity, "Error en el login.");
+                                });
+                    } else {
+                        showAlert(loginActivity, "Error en el login.");
+                    }
                 }
-            }
-        });
+            });
 
-        /*googleButton.setOnClickListener(new View.OnClickListener() {
+        /*this.loginActivity.getGoogleButton().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 GoogleSignInOptions googleConf = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -274,5 +206,49 @@ public class Controller implements ControllerInterface{
                 loginActivity.startActivityForResult(googleClient.getSignInIntent(), Constants.GOOGLE_SIGN_IN);
             }
         });*/
+
+        this.homeActivity.getBotonLogout().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    //FirebaseAuth.getInstance().signOut();
+                    switchActivity(homeActivity, loginActivity);
+                    //Eliminar fichero SharedPreferences
+                }
+            });
+
+        this.homeActivity.getBotonAhorcado().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    switchActivity(homeActivity, ahorcadoActivity);
+                }
+            });
+
+        this.homeActivity.getBotonLetras().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    switchActivity(homeActivity, extraActivity);
+                }
+            });
+
+        this.homeActivity.getBotonPalabra().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    switchActivity(homeActivity, paraulogicActivity);
+                }
+            });
+
+        this.homeActivity.getBotonPeril().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    switchActivity(homeActivity, perfilActivity);
+                }
+            });
+
+        this.homeActivity.getBotonStats().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    switchActivity(homeActivity, estadisticasActivity);
+                }
+            });
     }
 }
