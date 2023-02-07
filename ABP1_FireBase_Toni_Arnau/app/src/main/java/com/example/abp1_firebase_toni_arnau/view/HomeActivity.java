@@ -42,11 +42,8 @@ public class HomeActivity extends AppCompatActivity implements ViewActivity {
     }
 
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event){
-        if((keyCode == KeyEvent.KEYCODE_BACK)){
-            super.finish();
-        }
-        return super.onKeyDown(keyCode, event);
+    public void onBackPressed() {
+        super.finishAffinity();
     }
 
     public Button getBotonLogout() {
