@@ -10,7 +10,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import java.io.Serializable;
 
 public interface ControllerInterface {
-    void createActivityButtons();
+    void createActivityButtons(Activity activity);
     
     default String ifNullString(Object o) {
         if (o == null) return "";
@@ -43,6 +43,7 @@ public interface ControllerInterface {
     default boolean checkUserExists(DocumentSnapshot documentSnapshot) {
         return documentSnapshot.exists();
     }
+
     default void switchActivity(Activity from, Activity to) {
         switchActivity(from, to, "", null);
     }

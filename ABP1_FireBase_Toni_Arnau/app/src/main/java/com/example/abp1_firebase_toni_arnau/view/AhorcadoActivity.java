@@ -12,17 +12,9 @@ public class AhorcadoActivity extends AppCompatActivity implements ViewActivity 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        setTheme(R.style.Theme_ABP1_FireBase_Toni_Arnau);
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ahorcado);
-
+        createAllItemsAsGlobalWithGetters();
         callControllerWithThisActivityAsParameter();
     }
 
