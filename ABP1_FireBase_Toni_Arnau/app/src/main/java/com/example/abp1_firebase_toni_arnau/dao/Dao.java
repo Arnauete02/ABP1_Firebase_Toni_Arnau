@@ -58,11 +58,11 @@ public class Dao {
 
                             User user = new User(email, Providers.valueOf(documentSnapshot.get("provider").toString()));
 
-                            if (documentSnapshot.get("name") != null) {
+                            if (documentSnapshot.get("name") != null || documentSnapshot.get("name") != "") {
                                 user.setName(documentSnapshot.get("name").toString());
                             }
 
-                            if (documentSnapshot.get("username") != null) {
+                            if (documentSnapshot.get("username") != null || documentSnapshot.get("username") != "") {
                                 user.setName(documentSnapshot.get("username").toString());
                             }
 

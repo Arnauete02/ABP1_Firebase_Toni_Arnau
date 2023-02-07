@@ -10,8 +10,6 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import java.io.Serializable;
 
 public interface ControllerInterface {
-    void createActivityButtons(Activity activity);
-    
     default String ifNullString(Object o) {
         if (o == null) return "";
         if (o instanceof Timestamp) return ((Timestamp) o).toDate().toString();

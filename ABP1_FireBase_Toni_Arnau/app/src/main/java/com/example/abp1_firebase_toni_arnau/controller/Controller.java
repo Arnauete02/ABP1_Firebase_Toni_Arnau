@@ -85,13 +85,13 @@ public class Controller implements ControllerInterface{
     public void loginActivity(LoginActivity loginActivity) {
         this.loginActivity = loginActivity;
         this.loginActivity.createAllItemsAsGlobalWithGetters();
-        createActivityButtons(this.loginActivity);
+        createLoginActivityEvents();
     }
 
     public void homeActivity(HomeActivity homeActivity) {
         this.homeActivity = homeActivity;
         this.homeActivity.createAllItemsAsGlobalWithGetters();
-        createActivityButtons(this.homeActivity);
+        createHomeActivityEvents();
     }
 
     public void ahorcadoActivity(AhorcadoActivity ahorcadoActivity) {
@@ -107,13 +107,13 @@ public class Controller implements ControllerInterface{
     public void perfilActivity(PerfilActivity perfilActivity) {
         this.perfilActivity = perfilActivity;
         this.perfilActivity.createAllItemsAsGlobalWithGetters();
-        createActivityButtons(perfilActivity);
+        createProfileActivityEvents();
     }
 
     public void estadisticasActivity(EstadisticasActivity estadisticasActivity) {
         this.estadisticasActivity = estadisticasActivity;
         this.estadisticasActivity.createAllItemsAsGlobalWithGetters();
-        createActivityButtons(this.estadisticasActivity);
+        createEstadisticasActivityEvents();
     }
 
     public void extraActivity(ExtraActivity extraActivity) {
@@ -121,7 +121,158 @@ public class Controller implements ControllerInterface{
         this.extraActivity.createAllItemsAsGlobalWithGetters();
     }
 
-    //SharedPreferences
+    //METHODS OF ACTIVTIES TO CHECK EVENT'S (CLICK, ETC.)
+    private void createLoginActivityEvents(){
+        SharedPreferences prefs = this.loginActivity.getSharedPreferences(
+                "PREFERENCES_FILE_KEY", Context.MODE_PRIVATE);
+
+        //CHECK SESSION WITH SHEARED PREFERENCES, IF I DIDN'T DO LOG OUT
+        if (checkSession()) {
+            switchActivity(this.loginActivity, this.homeActivity);
+        }
+
+        // REGISTER WITH EMAIL & PASSWORD
+        this.loginActivity.getRegisterButton().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String mail = loginActivity.getMail().getText().toString();
+                String password = loginActivity.getPassword().getText().toString();
+
+                if (!mail.isEmpty() && !password.isEmpty()) {
+
+                    FirebaseAuth.getInstance()
+                            .createUserWithEmailAndPassword(mail, password)
+                            .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                    if (task.isSuccessful()) {
+                                        saveSession(Providers.LOGIN);
+                                        user.setEmail(mail);
+                                        user.setProvider(Providers.LOGIN);
+                                        dao.save(user);
+                                    } else {
+                                        showAlert(loginActivity, "Error en el registro.");
+                                    }
+                                }
+                            });
+                } else {
+                    showAlert(loginActivity, "Error en el registro.");
+                }
+            }
+        });
+
+        // LOGIN WITH EMAIL & PASSWORD
+        this.loginActivity.getLoginButton().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String mail = loginActivity.getMail().getText().toString();
+                String password = loginActivity.getPassword().getText().toString();
+
+                if (!mail.isEmpty() && !password.isEmpty()) {
+
+                    FirebaseAuth.getInstance()
+                            .signInWithEmailAndPassword(mail, password)
+                            .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                    if (task.isSuccessful()) {
+                                        saveSession(Providers.LOGIN);
+                                        user.setEmail(mail);
+                                        user.setProvider(Providers.LOGIN);
+                                    } else {
+                                        showAlert(loginActivity, "Error en el login.");
+                                    }
+
+                                }
+                            });
+                } else {
+                    showAlert(loginActivity, "Error en el login.");
+                }
+            }
+        });
+
+        // LOGIN WITH GOOGLE
+        this.loginActivity.getGoogleButton().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+    }
+
+    private void createHomeActivityEvents(){
+        this.homeActivity.getBotonLogout().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FirebaseAuth.getInstance().signOut();
+                clearSession();
+                switchActivity(homeActivity, loginActivity);
+            }
+        });
+
+        this.homeActivity.getBotonAhorcado().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                switchActivity(homeActivity, ahorcadoActivity);
+            }
+        });
+
+        this.homeActivity.getBotonLetras().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                switchActivity(homeActivity, extraActivity);
+            }
+        });
+
+        this.homeActivity.getBotonPalabra().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                switchActivity(homeActivity, paraulogicActivity);
+            }
+        });
+
+        this.homeActivity.getBotonPeril().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                switchActivity(homeActivity, perfilActivity);
+            }
+        });
+
+        this.homeActivity.getBotonStats().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                switchActivity(homeActivity, estadisticasActivity);
+            }
+        });
+    }
+
+    private void createProfileActivityEvents(){
+        if (checkSession()) {
+            dao.get(checkEmail());
+        } else {
+            dao.get(user.getEmail());
+        }
+
+        this.perfilActivity.getButtonPerfil().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                user.setEmail(String.valueOf(perfilActivity.getEditText_mail_perfil().getText()));
+                user.setName(String.valueOf(perfilActivity.getEditText_nombre().getText()));
+                user.setProvider(Providers.valueOf(perfilActivity.getTextViewProvider().getText().toString()));
+                user.setUsername(String.valueOf(perfilActivity.getEditText_alias().getText()));
+
+                dao.save(user);
+
+                Toast.makeText(perfilActivity, "Se ha guardado correctamente.", Toast.LENGTH_SHORT);
+            }
+        });
+    }
+
+    private void createEstadisticasActivityEvents(){
+
+    }
+
+    //METHODS OF SHARED PREFERENCES
     private void saveSession(Providers provider) {
         SharedPreferences.Editor prefs = this.loginActivity.getSharedPreferences(
                 "PREFERENCES_FILE_KEY", Context.MODE_PRIVATE).edit();
@@ -155,149 +306,7 @@ public class Controller implements ControllerInterface{
         return email;
     }
 
-    @Override
-    public void createActivityButtons(Activity activity) {
-        if (activity == this.loginActivity) {
-            SharedPreferences prefs = this.loginActivity.getSharedPreferences(
-                    "PREFERENCES_FILE_KEY", Context.MODE_PRIVATE);
-
-            if (checkSession()) {
-                switchActivity(this.loginActivity, this.homeActivity);
-            }
-
-        //REGISTER
-            this.loginActivity.getRegisterButton().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    String mail = loginActivity.getMail().getText().toString();
-                    String password = loginActivity.getPassword().getText().toString();
-
-                    if (!mail.isEmpty() && !password.isEmpty()) {
-
-                        FirebaseAuth.getInstance()
-                                .createUserWithEmailAndPassword(mail, password)
-                                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<AuthResult> task) {
-                                        if (task.isSuccessful()) {
-                                            saveSession(Providers.LOGIN);
-                                            user.setEmail(mail);
-                                            user.setProvider(Providers.LOGIN);
-                                            dao.save(user);
-                                        } else {
-                                            showAlert(loginActivity, "El correo ya está registrado.");
-                                        }
-                                    }
-                                });
-                    } else {
-                        showAlert(loginActivity, "Error en el registro.");
-                    }
-                }
-            });
-
-        // LOGIN
-            this.loginActivity.getLoginButton().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    String mail = loginActivity.getMail().getText().toString();
-                    String password = loginActivity.getPassword().getText().toString();
-
-                    if (!mail.isEmpty() && !password.isEmpty()) {
-
-                        FirebaseAuth.getInstance()
-                                .signInWithEmailAndPassword(mail, password)
-                                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<AuthResult> task) {
-                                        if (task.isSuccessful()) {
-                                            saveSession(Providers.LOGIN);
-                                            user.setEmail(mail);
-                                            user.setProvider(Providers.LOGIN);
-                                        } else {
-                                            showAlert(loginActivity, "Error en el login.");
-                                        }
-
-                                    }
-                                });
-                    } else {
-                        showAlert(loginActivity, "Error en el login.");
-                    }
-                }
-            });
-
-            this.loginActivity.getGoogleButton().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                }
-            });
-        } else if (activity == this.homeActivity) {
-            this.homeActivity.getBotonLogout().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    FirebaseAuth.getInstance().signOut();
-                    clearSession();
-                    switchActivity(homeActivity, loginActivity);
-                }
-            });
-
-            this.homeActivity.getBotonAhorcado().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    switchActivity(homeActivity, ahorcadoActivity);
-                }
-            });
-
-            this.homeActivity.getBotonLetras().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    switchActivity(homeActivity, extraActivity);
-                }
-            });
-
-            this.homeActivity.getBotonPalabra().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    switchActivity(homeActivity, paraulogicActivity);
-                }
-            });
-
-            this.homeActivity.getBotonPeril().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    switchActivity(homeActivity, perfilActivity);
-                }
-            });
-
-            this.homeActivity.getBotonStats().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    switchActivity(homeActivity, estadisticasActivity);
-                }
-            });
-        } else if (activity == this.perfilActivity) {
-            if (checkSession()) {
-                dao.get(checkEmail());
-            } else {
-                dao.get(user.getEmail());
-            }
-
-            this.perfilActivity.getButtonPerfil().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    user.setEmail(String.valueOf(perfilActivity.getEditText_mail_perfil().getText()));
-                    user.setName(String.valueOf(perfilActivity.getEditText_nombre().getText()));
-                    user.setProvider(Providers.valueOf(perfilActivity.getTextViewProvider().getText().toString()));
-                    user.setUsername(String.valueOf(perfilActivity.getEditText_alias().getText()));
-
-                    dao.save(user);
-
-                    Toast.makeText(perfilActivity, "Se ha guardado correctamente.", Toast.LENGTH_SHORT);
-                }
-            });
-        }
-    }
-
+    //OTHER METHODS
     public void returnCollectedData(User user) {
         this.perfilActivity.getEditText_mail_perfil().setText(user.getEmail());
         this.perfilActivity.getEditText_nombre().setText(user.getName());
