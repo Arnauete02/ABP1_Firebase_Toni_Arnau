@@ -13,6 +13,11 @@ public class User {
 
     }
 
+    public User(String email, Providers provider) {
+        this.email = email;
+        this.provider = provider;
+    }
+
     public User(String name, String email, Providers provider, String username) {
         this.name = name;
         this.email = email;

@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -84,13 +85,13 @@ public class Controller implements ControllerInterface{
     public void loginActivity(LoginActivity loginActivity) {
         this.loginActivity = loginActivity;
         this.loginActivity.createAllItemsAsGlobalWithGetters();
-        createActivityButtons(loginActivity);
+        createActivityButtons(this.loginActivity);
     }
 
     public void homeActivity(HomeActivity homeActivity) {
         this.homeActivity = homeActivity;
         this.homeActivity.createAllItemsAsGlobalWithGetters();
-        createActivityButtons(homeActivity);
+        createActivityButtons(this.homeActivity);
     }
 
     public void ahorcadoActivity(AhorcadoActivity ahorcadoActivity) {
@@ -106,11 +107,13 @@ public class Controller implements ControllerInterface{
     public void perfilActivity(PerfilActivity perfilActivity) {
         this.perfilActivity = perfilActivity;
         this.perfilActivity.createAllItemsAsGlobalWithGetters();
+        createActivityButtons(perfilActivity);
     }
 
     public void estadisticasActivity(EstadisticasActivity estadisticasActivity) {
         this.estadisticasActivity = estadisticasActivity;
         this.estadisticasActivity.createAllItemsAsGlobalWithGetters();
+        createActivityButtons(this.estadisticasActivity);
     }
 
     public void extraActivity(ExtraActivity extraActivity) {
@@ -144,6 +147,12 @@ public class Controller implements ControllerInterface{
             return true;
         }
         return false;
+    }
+
+    private String checkEmail () {
+        SharedPreferences prefs = this.loginActivity.getSharedPreferences("PREFERENCES_FILE_KEY", Context.MODE_PRIVATE);
+        String email = prefs.getString("email", null);
+        return email;
     }
 
     @Override
@@ -202,6 +211,8 @@ public class Controller implements ControllerInterface{
                                     public void onComplete(@NonNull Task<AuthResult> task) {
                                         if (task.isSuccessful()) {
                                             saveSession(Providers.LOGIN);
+                                            user.setEmail(mail);
+                                            user.setProvider(Providers.LOGIN);
                                         } else {
                                             showAlert(loginActivity, "Error en el login.");
                                         }
@@ -265,14 +276,23 @@ public class Controller implements ControllerInterface{
                 }
             });
         } else if (activity == this.perfilActivity) {
+            if (checkSession()) {
+                dao.get(checkEmail());
+            } else {
+                dao.get(user.getEmail());
+            }
+
             this.perfilActivity.getButtonPerfil().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     user.setEmail(String.valueOf(perfilActivity.getEditText_mail_perfil().getText()));
                     user.setName(String.valueOf(perfilActivity.getEditText_nombre().getText()));
+                    user.setProvider(Providers.valueOf(perfilActivity.getTextViewProvider().getText().toString()));
                     user.setUsername(String.valueOf(perfilActivity.getEditText_alias().getText()));
 
                     dao.save(user);
+
+                    Toast.makeText(perfilActivity, "Se ha guardado correctamente.", Toast.LENGTH_SHORT);
                 }
             });
         }
