@@ -15,6 +15,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 
 import com.example.abp1_firebase_toni_arnau.R;
+import com.example.abp1_firebase_toni_arnau.dao.Dao;
 import com.example.abp1_firebase_toni_arnau.model.User;
 import com.example.abp1_firebase_toni_arnau.utils.Constants;
 import com.example.abp1_firebase_toni_arnau.view.ExtraActivity;
@@ -39,6 +40,7 @@ import com.google.firebase.auth.FirebaseUser;
 public class Controller implements ControllerInterface{
     public static final String default_web_client_id = "28931008152-jgtpdrmfpcdeoffse8luipdme6g3unn3.apps.googleusercontent.com";
     private User user;
+    private Dao dao;
 
     //Definición de todas las activities como variables globales
     private MainActivity mainActivity;
@@ -70,6 +72,7 @@ public class Controller implements ControllerInterface{
         this.extraActivity = new ExtraActivity();
 
         this.user = new User();
+        this.dao = new Dao();
     }
 
     public void mainActivity(MainActivity mainActivity) {
@@ -153,6 +156,7 @@ public class Controller implements ControllerInterface{
                 switchActivity(this.loginActivity, this.homeActivity);
             }
 
+        //REGISTER
             this.loginActivity.getRegisterButton().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -169,6 +173,8 @@ public class Controller implements ControllerInterface{
                                         if (task.isSuccessful()) {
                                             saveSession(Providers.LOGIN);
                                             user.setEmail(mail);
+                                            user.setProvider(Providers.LOGIN);
+                                            dao.save(user);
                                         } else {
                                             showAlert(loginActivity, "El correo ya está registrado.");
                                         }
@@ -180,6 +186,7 @@ public class Controller implements ControllerInterface{
                 }
             });
 
+        // LOGIN
             this.loginActivity.getLoginButton().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -195,7 +202,6 @@ public class Controller implements ControllerInterface{
                                     public void onComplete(@NonNull Task<AuthResult> task) {
                                         if (task.isSuccessful()) {
                                             saveSession(Providers.LOGIN);
-                                            user.setEmail(mail);
                                         } else {
                                             showAlert(loginActivity, "Error en el login.");
                                         }
@@ -259,12 +265,24 @@ public class Controller implements ControllerInterface{
                 }
             });
         } else if (activity == this.perfilActivity) {
+            this.perfilActivity.getButtonPerfil().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    user.setEmail(String.valueOf(perfilActivity.getEditText_mail_perfil().getText()));
+                    user.setName(String.valueOf(perfilActivity.getEditText_nombre().getText()));
+                    user.setUsername(String.valueOf(perfilActivity.getEditText_alias().getText()));
 
+                    dao.save(user);
+                }
+            });
         }
     }
 
     public void returnCollectedData(User user) {
-
+        this.perfilActivity.getEditText_mail_perfil().setText(user.getEmail());
+        this.perfilActivity.getEditText_nombre().setText(user.getName());
+        this.perfilActivity.getEditText_alias().setText(user.getUsername());
+        this.perfilActivity.getTextViewProvider().setText(user.getProvider().toString());
     }
 
 }

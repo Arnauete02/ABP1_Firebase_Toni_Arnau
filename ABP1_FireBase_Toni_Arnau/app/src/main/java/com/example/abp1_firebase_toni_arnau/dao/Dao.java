@@ -23,9 +23,16 @@ public class Dao {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         HashMap<String, String> collection = new HashMap<String, String>();
-        collection.put("name", user.getName());
+
+        if(!user.getName().equals("")){
+            collection.put("name", user.getName());
+        }
+
+        if(!user.getUsername().equals("")){
+            collection.put("username", user.getUsername());
+        }
+
         collection.put("provider", user.getProvider().toString());
-        collection.put("username", user.getUsername());
 
         db.collection("users").document(user.getEmail())
                 .set(collection, SetOptions.merge());
