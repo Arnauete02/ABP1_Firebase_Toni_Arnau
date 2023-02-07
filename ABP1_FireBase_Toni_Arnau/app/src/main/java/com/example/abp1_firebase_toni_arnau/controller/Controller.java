@@ -15,6 +15,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 
 import com.example.abp1_firebase_toni_arnau.R;
+import com.example.abp1_firebase_toni_arnau.model.User;
 import com.example.abp1_firebase_toni_arnau.utils.Constants;
 import com.example.abp1_firebase_toni_arnau.view.ExtraActivity;
 import com.example.abp1_firebase_toni_arnau.utils.Providers;
@@ -37,6 +38,7 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class Controller implements ControllerInterface{
     public static final String default_web_client_id = "28931008152-jgtpdrmfpcdeoffse8luipdme6g3unn3.apps.googleusercontent.com";
+    private User user;
 
     //Definición de todas las activities como variables globales
     private MainActivity mainActivity;
@@ -66,6 +68,8 @@ public class Controller implements ControllerInterface{
         this.perfilActivity = new PerfilActivity();
         this.estadisticasActivity = new EstadisticasActivity();
         this.extraActivity = new ExtraActivity();
+
+        this.user = new User();
     }
 
     public void mainActivity(MainActivity mainActivity) {
@@ -164,6 +168,7 @@ public class Controller implements ControllerInterface{
                                     public void onComplete(@NonNull Task<AuthResult> task) {
                                         if (task.isSuccessful()) {
                                             saveSession(Providers.LOGIN);
+                                            user.setEmail(mail);
                                         } else {
                                             showAlert(loginActivity, "El correo ya está registrado.");
                                         }
@@ -190,6 +195,7 @@ public class Controller implements ControllerInterface{
                                     public void onComplete(@NonNull Task<AuthResult> task) {
                                         if (task.isSuccessful()) {
                                             saveSession(Providers.LOGIN);
+                                            user.setEmail(mail);
                                         } else {
                                             showAlert(loginActivity, "Error en el login.");
                                         }
@@ -208,7 +214,7 @@ public class Controller implements ControllerInterface{
 
                 }
             });
-        } else {
+        } else if (activity == this.homeActivity) {
             this.homeActivity.getBotonLogout().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -252,7 +258,13 @@ public class Controller implements ControllerInterface{
                     switchActivity(homeActivity, estadisticasActivity);
                 }
             });
+        } else if (activity == this.perfilActivity) {
+
         }
+    }
+
+    public void returnCollectedData(User user) {
+
     }
 
 }

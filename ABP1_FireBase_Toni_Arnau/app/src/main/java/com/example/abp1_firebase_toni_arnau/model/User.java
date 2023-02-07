@@ -6,14 +6,18 @@ import com.example.abp1_firebase_toni_arnau.utils.Providers;
 public class User {
     private String name;
     private String email;
-    private String password;
     private Providers provider;
+    private String username;
 
-    private static User user;
+    public User() {
 
-    public static User getInstance() {
-        if (user == null) user = new User();
-        return user;
+    }
+
+    public User(String name, String email, Providers provider, String username) {
+        this.name = name;
+        this.email = email;
+        this.provider = provider;
+        this.username = username;
     }
 
     public String getName() {
@@ -24,15 +28,27 @@ public class User {
         return email;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
     public Providers getProvider() {
         return provider;
     }
 
-    public static User getUser() {
-        return user;
+    public String getUsername() {
+        return username;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setProvider(Providers provider) {
+        this.provider = provider;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }
