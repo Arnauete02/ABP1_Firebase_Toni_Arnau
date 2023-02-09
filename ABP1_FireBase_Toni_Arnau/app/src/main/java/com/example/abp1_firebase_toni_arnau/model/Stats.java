@@ -1,21 +1,30 @@
 package com.example.abp1_firebase_toni_arnau.model;
 
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.FieldValue;
 
+import java.util.Date;
+
 public class Stats {
-    private  int ganadasAhorcado;
-    private  int ganadasParaulogic;
-    private FieldValue fecha;
-    private User user;
+    private String email;
+    private int ganadasAhorcado;
+    private int ganadasParaulogic;
+    private int numeroInicios;
+    private Date fecha;
 
     public Stats() {
     }
 
-    public Stats(int ganadasAhorcado, int ganadasParaulogic, FieldValue fecha, User user) {
+    public Stats(String email, int ganadasAhorcado, int ganadasParaulogic, int numeroInicios, Date fecha) {
+        this.email = email;
         this.ganadasAhorcado = ganadasAhorcado;
         this.ganadasParaulogic = ganadasParaulogic;
+        this.numeroInicios = numeroInicios;
         this.fecha = fecha;
-        this.user = user;
+    }
+
+    public String getEmail() {
+        return email;
     }
 
     public int getGanadasAhorcado() {
@@ -26,24 +35,12 @@ public class Stats {
         return ganadasParaulogic;
     }
 
-    public User getUser() {
-        return user;
+    public int getNumeroInicios() {
+        return numeroInicios;
     }
 
-    public FieldValue getFecha() {
+    public Date getFecha() {
         return fecha;
-    }
-
-    public void setGanadasAhorcado(int ganadasAhorcado) {
-        this.ganadasAhorcado = ganadasAhorcado;
-    }
-
-    public void setGanadasParaulogic(int ganadasParaulogic) {
-        this.ganadasParaulogic = ganadasParaulogic;
-    }
-
-    public void setFecha(FieldValue fecha) {
-        this.fecha = fecha;
     }
 }
 

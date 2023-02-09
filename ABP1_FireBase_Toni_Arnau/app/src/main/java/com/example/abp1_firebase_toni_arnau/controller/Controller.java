@@ -32,6 +32,7 @@ import com.example.abp1_firebase_toni_arnau.view.ParaulogicActivity;
 import com.example.abp1_firebase_toni_arnau.view.PerfilActivity;
 import com.google.android.gms.auth.api.identity.BeginSignInRequest;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -43,6 +44,7 @@ import com.google.firebase.auth.FirebaseUser;
 public class Controller implements ControllerInterface{
     public static final String default_web_client_id = "28931008152-jgtpdrmfpcdeoffse8luipdme6g3unn3.apps.googleusercontent.com";
     private User user;
+    private Stats stats;
     private Dao dao;
 
     //Definición de todas las activities como variables globales
@@ -75,6 +77,7 @@ public class Controller implements ControllerInterface{
         this.extraActivity = new ExtraActivity();
 
         this.user = new User();
+        this.stats = new Stats();
         this.dao = new Dao();
     }
 
@@ -259,9 +262,9 @@ public class Controller implements ControllerInterface{
 
     private void createProfileActivityEvents() {
         if (checkSession()) {
-            dao.get(checkEmail());
+            dao.get(checkEmail(), "users");
         } else {
-            dao.get(user.getEmail());
+            dao.get(user.getEmail(), "users");
         }
 
         // DO IT BECAUSE I CAN'T MODIFY MY GOOGLE EMAIL ACCOUNT
@@ -287,11 +290,10 @@ public class Controller implements ControllerInterface{
 
     private void createEstadisticasActivityEvents(){
         if (checkSession()) {
-            dao.get(checkEmail());
+            dao.get(checkEmail(), "stats");
         } else {
-            dao.get(user.getEmail());
+            dao.get(stats.getEmail(), "stats");
         }
-
     }
 
     //METHODS OF SHARED PREFERENCES
@@ -351,17 +353,16 @@ public class Controller implements ControllerInterface{
         this.perfilActivity.getTextViewProvider().setText(user.getProvider().toString());
     }
 
+    public void returnCollectedData(Stats stats) {
+        this.estadisticasActivity.getGanadasAhorcado().setText(stats.getGanadasAhorcado());
+        this.estadisticasActivity.getGanadasParaulogic().setText(stats.getGanadasParaulogic());
+        this.estadisticasActivity.getInicioSesion().setText(stats.getNumeroInicios());
+        this.estadisticasActivity.getUltimasesion().setText(stats.getFecha().toString());
+    }
+
     public void getSignedAccount(){
         dao.save(GoogleSignIn.getLastSignedInAccount(this.loginActivity));
 
         saveSession(GoogleSignIn.getLastSignedInAccount(this.loginActivity));
     }
-
-    public void returnCollectedDataStats(Stats stats) {
-        this.estadisticasActivity.getGanadasAhorcado().setText(stats.getGanadasAhorcado());
-        this.estadisticasActivity.getGanadasParaulogic().setText(stats.getGanadasParaulogic());
-    }
-
-
-
 }
