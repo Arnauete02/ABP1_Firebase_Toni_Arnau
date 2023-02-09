@@ -148,7 +148,7 @@ public class Controller implements ControllerInterface{
                                 @Override
                                 public void onComplete(@NonNull Task<AuthResult> task) {
                                     if (task.isSuccessful()) {
-                                        saveSession(Providers.LOGIN);
+                                        saveSession();
                                         user.setEmail(mail);
                                         user.setProvider(Providers.LOGIN);
                                         dao.save(user);
@@ -178,7 +178,7 @@ public class Controller implements ControllerInterface{
                                 @Override
                                 public void onComplete(@NonNull Task<AuthResult> task) {
                                     if (task.isSuccessful()) {
-                                        saveSession(Providers.LOGIN);
+                                        saveSession();
                                         user.setEmail(mail);
                                         user.setProvider(Providers.LOGIN);
                                     } else {
@@ -197,12 +197,21 @@ public class Controller implements ControllerInterface{
         this.loginActivity.getGoogleButton().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                        .requestIdToken(loginActivity.getString(R.string.default_web_client_id))
+                        .requestEmail()
+                        .build();
 
+                GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(loginActivity, googleSignInOptions);
+
+                googleSignInClient.signOut();
+
+                loginActivity.startActivityForResult(googleSignInClient.getSignInIntent(), Constants.GOOGLE_SIGN_IN);
             }
         });
     }
 
-    private void createHomeActivityEvents(){
+    private void createHomeActivityEvents() {
         this.homeActivity.getBotonLogout().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -248,11 +257,17 @@ public class Controller implements ControllerInterface{
         });
     }
 
-    private void createProfileActivityEvents(){
+    private void createProfileActivityEvents() {
         if (checkSession()) {
             dao.get(checkEmail());
         } else {
             dao.get(user.getEmail());
+        }
+
+        // DO IT BECAUSE I CAN'T MODIFY MY GOOGLE EMAIL ACCOUNT
+        if (Providers.valueOf(checkProvider()) == Providers.GOOGLE) {
+            this.perfilActivity.getEditText_mail_perfil().setEnabled(false);
+            this.perfilActivity.getEditText_mail_perfil().setFocusable(false);
         }
 
         this.perfilActivity.getButtonPerfil().setOnClickListener(new View.OnClickListener() {
@@ -280,11 +295,20 @@ public class Controller implements ControllerInterface{
     }
 
     //METHODS OF SHARED PREFERENCES
-    private void saveSession(Providers provider) {
+    private void saveSession() {
         SharedPreferences.Editor prefs = this.loginActivity.getSharedPreferences(
                 "PREFERENCES_FILE_KEY", Context.MODE_PRIVATE).edit();
         prefs.putString("email", this.loginActivity.getMail().getText().toString());
-        prefs.putString("provider", provider.toString());
+        prefs.putString("provider", Providers.LOGIN.toString());
+        prefs.apply();
+        switchActivity(this.loginActivity, this.homeActivity);
+    }
+
+    private void saveSession(GoogleSignInAccount signInAccount) {
+        SharedPreferences.Editor prefs = this.loginActivity.getSharedPreferences(
+                "PREFERENCES_FILE_KEY", Context.MODE_PRIVATE).edit();
+        prefs.putString("email", signInAccount.getEmail().toString());
+        prefs.putString("provider", Providers.GOOGLE.toString());
         prefs.apply();
         switchActivity(this.loginActivity, this.homeActivity);
     }
@@ -297,7 +321,7 @@ public class Controller implements ControllerInterface{
         switchActivity(this.homeActivity, this.mainActivity);
     }
 
-    private boolean checkSession () {
+    private boolean checkSession() {
         SharedPreferences prefs = this.loginActivity.getSharedPreferences("PREFERENCES_FILE_KEY", Context.MODE_PRIVATE);
         String email = prefs.getString("email", null);
         String provider = prefs.getString("provider", null);
@@ -307,10 +331,16 @@ public class Controller implements ControllerInterface{
         return false;
     }
 
-    private String checkEmail () {
+    private String checkEmail() {
         SharedPreferences prefs = this.loginActivity.getSharedPreferences("PREFERENCES_FILE_KEY", Context.MODE_PRIVATE);
         String email = prefs.getString("email", null);
         return email;
+    }
+
+    private String checkProvider() {
+        SharedPreferences prefs = this.loginActivity.getSharedPreferences("PREFERENCES_FILE_KEY", Context.MODE_PRIVATE);
+        String provider = prefs.getString("provider", null);
+        return provider;
     }
 
     //OTHER METHODS
@@ -319,6 +349,12 @@ public class Controller implements ControllerInterface{
         this.perfilActivity.getEditText_nombre().setText(user.getName());
         this.perfilActivity.getEditText_alias().setText(user.getUsername());
         this.perfilActivity.getTextViewProvider().setText(user.getProvider().toString());
+    }
+
+    public void getSignedAccount(){
+        dao.save(GoogleSignIn.getLastSignedInAccount(this.loginActivity));
+
+        saveSession(GoogleSignIn.getLastSignedInAccount(this.loginActivity));
     }
 
     public void returnCollectedDataStats(Stats stats) {
