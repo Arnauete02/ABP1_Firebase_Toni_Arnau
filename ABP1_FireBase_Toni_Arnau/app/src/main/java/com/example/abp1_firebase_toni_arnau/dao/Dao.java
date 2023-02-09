@@ -1,9 +1,13 @@
 package com.example.abp1_firebase_toni_arnau.dao;
 
+import androidx.annotation.NonNull;
+
 import com.example.abp1_firebase_toni_arnau.controller.Controller;
 import com.example.abp1_firebase_toni_arnau.model.User;
 import com.example.abp1_firebase_toni_arnau.utils.Providers;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
@@ -19,13 +23,26 @@ public class Dao {
         return dao;
     }
 
+    // METHODS OF USER TO DATABASE
+
     public void save(User user) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         HashMap<String, String> collection = new HashMap<String, String>();
-        collection.put("name", user.getName());
+
+        if(user.getName() != null) {
+            collection.put("name", user.getName());
+        } else {
+            collection.put("name", null);
+        }
+
+        if(user.getUsername() != null){
+            collection.put("username", user.getUsername());
+        } else {
+            collection.put("username", null);
+        }
+
         collection.put("provider", user.getProvider().toString());
-        collection.put("username", user.getUsername());
 
         db.collection("users").document(user.getEmail())
                 .set(collection, SetOptions.merge());
@@ -35,12 +52,24 @@ public class Dao {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         db.collection("users").document(email)
-                .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        User user = new User(documentSnapshot.get("name").toString(), email,
-                                Providers.valueOf(documentSnapshot.get("provider").toString()), documentSnapshot.get("username").toString());
-                        Controller.getInstance().returnCollectedData(user);
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot documentSnapshot = task.getResult();
+
+                            User user = new User(email, Providers.valueOf(documentSnapshot.get("provider").toString()));
+
+                            if (!documentSnapshot.get("name").toString().equals("")) {
+                                user.setName(documentSnapshot.get("name").toString());
+                            }
+
+                            if (!documentSnapshot.get("username").toString().equals("")) {
+                                user.setUsername(documentSnapshot.get("username").toString());
+                            }
+
+                            Controller.getInstance().returnCollectedData(user);
+                        }
                     }
                 });
 

@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -15,6 +16,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 
 import com.example.abp1_firebase_toni_arnau.R;
+import com.example.abp1_firebase_toni_arnau.dao.Dao;
 import com.example.abp1_firebase_toni_arnau.model.User;
 import com.example.abp1_firebase_toni_arnau.utils.Constants;
 import com.example.abp1_firebase_toni_arnau.view.ExtraActivity;
@@ -39,6 +41,7 @@ import com.google.firebase.auth.FirebaseUser;
 public class Controller implements ControllerInterface{
     public static final String default_web_client_id = "28931008152-jgtpdrmfpcdeoffse8luipdme6g3unn3.apps.googleusercontent.com";
     private User user;
+    private Dao dao;
 
     //Definición de todas las activities como variables globales
     private MainActivity mainActivity;
@@ -70,6 +73,7 @@ public class Controller implements ControllerInterface{
         this.extraActivity = new ExtraActivity();
 
         this.user = new User();
+        this.dao = new Dao();
     }
 
     public void mainActivity(MainActivity mainActivity) {
@@ -81,13 +85,13 @@ public class Controller implements ControllerInterface{
     public void loginActivity(LoginActivity loginActivity) {
         this.loginActivity = loginActivity;
         this.loginActivity.createAllItemsAsGlobalWithGetters();
-        createActivityButtons(loginActivity);
+        createLoginActivityEvents();
     }
 
     public void homeActivity(HomeActivity homeActivity) {
         this.homeActivity = homeActivity;
         this.homeActivity.createAllItemsAsGlobalWithGetters();
-        createActivityButtons(homeActivity);
+        createHomeActivityEvents();
     }
 
     public void ahorcadoActivity(AhorcadoActivity ahorcadoActivity) {
@@ -103,11 +107,13 @@ public class Controller implements ControllerInterface{
     public void perfilActivity(PerfilActivity perfilActivity) {
         this.perfilActivity = perfilActivity;
         this.perfilActivity.createAllItemsAsGlobalWithGetters();
+        createProfileActivityEvents();
     }
 
     public void estadisticasActivity(EstadisticasActivity estadisticasActivity) {
         this.estadisticasActivity = estadisticasActivity;
         this.estadisticasActivity.createAllItemsAsGlobalWithGetters();
+        createEstadisticasActivityEvents();
     }
 
     public void extraActivity(ExtraActivity extraActivity) {
@@ -115,7 +121,158 @@ public class Controller implements ControllerInterface{
         this.extraActivity.createAllItemsAsGlobalWithGetters();
     }
 
-    //SharedPreferences
+    //METHODS OF ACTIVTIES TO CHECK EVENT'S (CLICK, ETC.)
+    private void createLoginActivityEvents(){
+        SharedPreferences prefs = this.loginActivity.getSharedPreferences(
+                "PREFERENCES_FILE_KEY", Context.MODE_PRIVATE);
+
+        //CHECK SESSION WITH SHEARED PREFERENCES, IF I DIDN'T DO LOG OUT
+        if (checkSession()) {
+            switchActivity(this.loginActivity, this.homeActivity);
+        }
+
+        // REGISTER WITH EMAIL & PASSWORD
+        this.loginActivity.getRegisterButton().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String mail = loginActivity.getMail().getText().toString();
+                String password = loginActivity.getPassword().getText().toString();
+
+                if (!mail.isEmpty() && !password.isEmpty()) {
+
+                    FirebaseAuth.getInstance()
+                            .createUserWithEmailAndPassword(mail, password)
+                            .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                    if (task.isSuccessful()) {
+                                        saveSession(Providers.LOGIN);
+                                        user.setEmail(mail);
+                                        user.setProvider(Providers.LOGIN);
+                                        dao.save(user);
+                                    } else {
+                                        showAlert(loginActivity, "Error en el registro.");
+                                    }
+                                }
+                            });
+                } else {
+                    showAlert(loginActivity, "Error en el registro.");
+                }
+            }
+        });
+
+        // LOGIN WITH EMAIL & PASSWORD
+        this.loginActivity.getLoginButton().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String mail = loginActivity.getMail().getText().toString();
+                String password = loginActivity.getPassword().getText().toString();
+
+                if (!mail.isEmpty() && !password.isEmpty()) {
+
+                    FirebaseAuth.getInstance()
+                            .signInWithEmailAndPassword(mail, password)
+                            .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                    if (task.isSuccessful()) {
+                                        saveSession(Providers.LOGIN);
+                                        user.setEmail(mail);
+                                        user.setProvider(Providers.LOGIN);
+                                    } else {
+                                        showAlert(loginActivity, "Error en el login.");
+                                    }
+
+                                }
+                            });
+                } else {
+                    showAlert(loginActivity, "Error en el login.");
+                }
+            }
+        });
+
+        // LOGIN WITH GOOGLE
+        this.loginActivity.getGoogleButton().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+    }
+
+    private void createHomeActivityEvents(){
+        this.homeActivity.getBotonLogout().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FirebaseAuth.getInstance().signOut();
+                clearSession();
+                switchActivity(homeActivity, loginActivity);
+            }
+        });
+
+        this.homeActivity.getBotonAhorcado().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                switchActivity(homeActivity, ahorcadoActivity);
+            }
+        });
+
+        this.homeActivity.getBotonLetras().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                switchActivity(homeActivity, extraActivity);
+            }
+        });
+
+        this.homeActivity.getBotonPalabra().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                switchActivity(homeActivity, paraulogicActivity);
+            }
+        });
+
+        this.homeActivity.getBotonPeril().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                switchActivity(homeActivity, perfilActivity);
+            }
+        });
+
+        this.homeActivity.getBotonStats().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                switchActivity(homeActivity, estadisticasActivity);
+            }
+        });
+    }
+
+    private void createProfileActivityEvents(){
+        if (checkSession()) {
+            dao.get(checkEmail());
+        } else {
+            dao.get(user.getEmail());
+        }
+
+        this.perfilActivity.getButtonPerfil().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                user.setEmail(String.valueOf(perfilActivity.getEditText_mail_perfil().getText()));
+                user.setName(String.valueOf(perfilActivity.getEditText_nombre().getText()));
+                user.setProvider(Providers.valueOf(perfilActivity.getTextViewProvider().getText().toString()));
+                user.setUsername(String.valueOf(perfilActivity.getEditText_alias().getText()));
+
+                dao.save(user);
+
+                Toast.makeText(perfilActivity, "Se ha guardado correctamente.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void createEstadisticasActivityEvents(){
+
+    }
+
+    //METHODS OF SHARED PREFERENCES
     private void saveSession(Providers provider) {
         SharedPreferences.Editor prefs = this.loginActivity.getSharedPreferences(
                 "PREFERENCES_FILE_KEY", Context.MODE_PRIVATE).edit();
@@ -143,128 +300,18 @@ public class Controller implements ControllerInterface{
         return false;
     }
 
-    @Override
-    public void createActivityButtons(Activity activity) {
-        if (activity == this.loginActivity) {
-            SharedPreferences prefs = this.loginActivity.getSharedPreferences(
-                    "PREFERENCES_FILE_KEY", Context.MODE_PRIVATE);
-
-            if (checkSession()) {
-                switchActivity(this.loginActivity, this.homeActivity);
-            }
-
-            this.loginActivity.getRegisterButton().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    String mail = loginActivity.getMail().getText().toString();
-                    String password = loginActivity.getPassword().getText().toString();
-
-                    if (!mail.isEmpty() && !password.isEmpty()) {
-
-                        FirebaseAuth.getInstance()
-                                .createUserWithEmailAndPassword(mail, password)
-                                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<AuthResult> task) {
-                                        if (task.isSuccessful()) {
-                                            saveSession(Providers.LOGIN);
-                                            user.setEmail(mail);
-                                        } else {
-                                            showAlert(loginActivity, "El correo ya está registrado.");
-                                        }
-                                    }
-                                });
-                    } else {
-                        showAlert(loginActivity, "Error en el registro.");
-                    }
-                }
-            });
-
-            this.loginActivity.getLoginButton().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    String mail = loginActivity.getMail().getText().toString();
-                    String password = loginActivity.getPassword().getText().toString();
-
-                    if (!mail.isEmpty() && !password.isEmpty()) {
-
-                        FirebaseAuth.getInstance()
-                                .signInWithEmailAndPassword(mail, password)
-                                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<AuthResult> task) {
-                                        if (task.isSuccessful()) {
-                                            saveSession(Providers.LOGIN);
-                                            user.setEmail(mail);
-                                        } else {
-                                            showAlert(loginActivity, "Error en el login.");
-                                        }
-
-                                    }
-                                });
-                    } else {
-                        showAlert(loginActivity, "Error en el login.");
-                    }
-                }
-            });
-
-            this.loginActivity.getGoogleButton().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                }
-            });
-        } else if (activity == this.homeActivity) {
-            this.homeActivity.getBotonLogout().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    FirebaseAuth.getInstance().signOut();
-                    clearSession();
-                    switchActivity(homeActivity, loginActivity);
-                }
-            });
-
-            this.homeActivity.getBotonAhorcado().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    switchActivity(homeActivity, ahorcadoActivity);
-                }
-            });
-
-            this.homeActivity.getBotonLetras().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    switchActivity(homeActivity, extraActivity);
-                }
-            });
-
-            this.homeActivity.getBotonPalabra().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    switchActivity(homeActivity, paraulogicActivity);
-                }
-            });
-
-            this.homeActivity.getBotonPeril().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    switchActivity(homeActivity, perfilActivity);
-                }
-            });
-
-            this.homeActivity.getBotonStats().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    switchActivity(homeActivity, estadisticasActivity);
-                }
-            });
-        } else if (activity == this.perfilActivity) {
-
-        }
+    private String checkEmail () {
+        SharedPreferences prefs = this.loginActivity.getSharedPreferences("PREFERENCES_FILE_KEY", Context.MODE_PRIVATE);
+        String email = prefs.getString("email", null);
+        return email;
     }
 
+    //OTHER METHODS
     public void returnCollectedData(User user) {
-
+        this.perfilActivity.getEditText_mail_perfil().setText(user.getEmail());
+        this.perfilActivity.getEditText_nombre().setText(user.getName());
+        this.perfilActivity.getEditText_alias().setText(user.getUsername());
+        this.perfilActivity.getTextViewProvider().setText(user.getProvider().toString());
     }
 
 }
