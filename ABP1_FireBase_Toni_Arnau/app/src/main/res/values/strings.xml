@@ -24,11 +24,22 @@
     <string name="buttonPerfil">Guardar Cambios</string>
 
     <string name="ganadasAhorcado">Partidas Ganadas al Ahorcado:</string>
-    <string name="ganadasParaulogic">Partidas Ganadas al Paraulogic:</string>
+    <string name="ganadasParaulogic">Partidas Jugadas al Paraulogic:</string>
     <string name="inicioSesion">Número de Inicios de Sesión:</string>
     <string name="ultimaSesion">Fecha de la última Sesión:</string>
 
     <string name="splash_titulo">Nauto Games</string>
     <string name="splash_subtit">Palabras para jugar</string>
     <string name="rubik">rubik</string>
+
+    <string name="palabraGuiones"></string>
+    <string name="textoGuia"></string>
+    <string name="textPalabraBomb">PALABRA:</string>
+    <string name="textBotonBomb">Prueba Letra</string>
+    <string name="textLetraBomb">Introduce una Letra</string>
+
+    <string name="textPalaPala">PALABRA:</string>
+    <string name="textPalaAcierto">Palabras Acertadas: </string>
+    <string name="textPalaHintn">Introduce una Palabra</string>
+    <string name="textPalaBoton">Prueba la Palabra</string>
 </resources>

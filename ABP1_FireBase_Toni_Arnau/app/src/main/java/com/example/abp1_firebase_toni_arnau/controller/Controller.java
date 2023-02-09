@@ -97,11 +97,13 @@ public class Controller implements ControllerInterface{
     public void ahorcadoActivity(AhorcadoActivity ahorcadoActivity) {
         this.ahorcadoActivity = ahorcadoActivity;
         this.ahorcadoActivity.createAllItemsAsGlobalWithGetters();
+        createAhorcadoActivityEvents();
     }
 
     public void paraulogicActivity(ParaulogicActivity paraulogicActivity) {
         this.paraulogicActivity = paraulogicActivity;
         this.paraulogicActivity.createAllItemsAsGlobalWithGetters();
+        createParaulogicActivityEvents();
     }
 
     public void perfilActivity(PerfilActivity perfilActivity) {
@@ -269,6 +271,26 @@ public class Controller implements ControllerInterface{
     }
 
     private void createEstadisticasActivityEvents(){
+
+    }
+
+    private void createParaulogicActivityEvents(){
+
+    }
+
+    private void createAhorcadoActivityEvents(){
+        if (checkSession()) {
+            dao.get(checkEmail());
+        } else {
+            dao.get(user.getEmail());
+        }
+
+        this.ahorcadoActivity.getButtonBomb().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
 
     }
 
