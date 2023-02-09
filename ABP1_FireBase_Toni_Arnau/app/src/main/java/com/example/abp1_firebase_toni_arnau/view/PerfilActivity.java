@@ -58,20 +58,4 @@ public class PerfilActivity extends AppCompatActivity  implements ViewActivity{
     public Button getButtonPerfil() {
         return buttonPerfil;
     }
-
-    public void setEditText_nombre(EditText editText_nombre) {
-        this.editText_nombre = editText_nombre;
-    }
-
-    public void setEditText_mail_perfil(EditText editText_mail_perfil) {
-        this.editText_mail_perfil = editText_mail_perfil;
-    }
-
-    public void setEditText_alias(EditText editText_alias) {
-        this.editText_alias = editText_alias;
-    }
-
-    public void setTextViewProvider(TextView textViewProvider) {
-        this.textViewProvider = textViewProvider;
-    }
 }
