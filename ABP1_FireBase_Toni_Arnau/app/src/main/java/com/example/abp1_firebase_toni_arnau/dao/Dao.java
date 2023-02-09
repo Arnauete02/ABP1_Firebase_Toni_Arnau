@@ -27,6 +27,8 @@ public class Dao {
         return dao;
     }
 
+    // METHODS OF USER TO DATABASE
+
     public void save(User user) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -91,12 +93,12 @@ public class Dao {
 
                             User user = new User(email, Providers.valueOf(documentSnapshot.get("provider").toString()));
 
-                            if (documentSnapshot.get("name") != null || documentSnapshot.get("name") != "") {
+                            if (!documentSnapshot.get("name").toString().equals("")) {
                                 user.setName(documentSnapshot.get("name").toString());
                             }
 
-                            if (documentSnapshot.get("username") != null || documentSnapshot.get("username") != "") {
-                                user.setName(documentSnapshot.get("username").toString());
+                            if (!documentSnapshot.get("username").toString().equals("")) {
+                                user.setUsername(documentSnapshot.get("username").toString());
                             }
 
                             Controller.getInstance().returnCollectedData(user);

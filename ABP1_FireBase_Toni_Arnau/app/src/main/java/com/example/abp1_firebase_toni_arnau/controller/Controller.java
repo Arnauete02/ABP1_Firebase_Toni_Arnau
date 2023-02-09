@@ -265,7 +265,7 @@ public class Controller implements ControllerInterface{
 
                 dao.save(user);
 
-                Toast.makeText(perfilActivity, "Se ha guardado correctamente.", Toast.LENGTH_SHORT);
+                Toast.makeText(perfilActivity, "Se ha guardado correctamente.", Toast.LENGTH_SHORT).show();
             }
         });
     }
