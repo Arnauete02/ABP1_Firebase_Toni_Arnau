@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
@@ -17,6 +18,7 @@ import androidx.annotation.NonNull;
 
 import com.example.abp1_firebase_toni_arnau.R;
 import com.example.abp1_firebase_toni_arnau.dao.Dao;
+import com.example.abp1_firebase_toni_arnau.model.Stats;
 import com.example.abp1_firebase_toni_arnau.model.User;
 import com.example.abp1_firebase_toni_arnau.utils.Constants;
 import com.example.abp1_firebase_toni_arnau.view.ExtraActivity;
@@ -269,6 +271,11 @@ public class Controller implements ControllerInterface{
     }
 
     private void createEstadisticasActivityEvents(){
+        if (checkSession()) {
+            dao.get(checkEmail());
+        } else {
+            dao.get(user.getEmail());
+        }
 
     }
 
@@ -313,5 +320,12 @@ public class Controller implements ControllerInterface{
         this.perfilActivity.getEditText_alias().setText(user.getUsername());
         this.perfilActivity.getTextViewProvider().setText(user.getProvider().toString());
     }
+
+    public void returnCollectedDataStats(Stats stats) {
+        this.estadisticasActivity.getGanadasAhorcado().setText(stats.getGanadasAhorcado());
+        this.estadisticasActivity.getGanadasParaulogic().setText(stats.getGanadasParaulogic());
+    }
+
+
 
 }

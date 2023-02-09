@@ -1,14 +1,18 @@
 package com.example.abp1_firebase_toni_arnau.dao;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 
 import com.example.abp1_firebase_toni_arnau.controller.Controller;
+import com.example.abp1_firebase_toni_arnau.model.Stats;
 import com.example.abp1_firebase_toni_arnau.model.User;
 import com.example.abp1_firebase_toni_arnau.utils.Providers;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.inject.Provider;
@@ -28,13 +32,13 @@ public class Dao {
 
         HashMap<String, String> collection = new HashMap<String, String>();
 
-        if(user.getName() != null) {
+        if (user.getName() != null) {
             collection.put("name", user.getName());
         } else {
             collection.put("name", null);
         }
 
-        if(user.getUsername() != null){
+        if (user.getUsername() != null) {
             collection.put("username", user.getUsername());
         } else {
             collection.put("username", null);
@@ -45,6 +49,35 @@ public class Dao {
         db.collection("users").document(user.getEmail())
                 .set(collection, SetOptions.merge());
     }
+
+    public void saveStats (Stats stats) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        HashMap<String, Object> estadisticas = new HashMap<String, Object>();
+
+        if (stats.getGanadasAhorcado() != 0) {
+            estadisticas.put("ganadas ahorcado", stats.getGanadasAhorcado());
+        } else {
+            estadisticas.put("ganadas ahoracdo", 0);
+        }
+
+        if (stats.getGanadasParaulogic() != 0) {
+            estadisticas.put("ganadas paraulogic", stats.getGanadasParaulogic());
+        } else {
+            estadisticas.put("ganadas paraulogic", 0);
+        }
+
+        if (stats.getFecha() != FieldValue.serverTimestamp()) {
+            estadisticas.put("datatime", stats.getFecha());
+        } else {
+            estadisticas.put("dataTime", FieldValue.serverTimestamp());
+        }
+
+        db.collection("estadisticas").document(stats.getMail())
+               .set(stats, SetOptions.merge());
+
+    }
+
 
     public void get(String email) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
