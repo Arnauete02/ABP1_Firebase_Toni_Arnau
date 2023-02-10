@@ -318,8 +318,9 @@ public class Controller implements ControllerInterface {
                     }
 
                 } while (!paraula.juegofin());
-                ahorcadoActivity.finish();
-                ahorcadoActivity.recreate();
+                paraula.setGanadas(paraula.getGanadas()+1);
+                paraulogicActivity.finish();
+                paraulogicActivity.recreate();
 
             }
         });

@@ -6,16 +6,14 @@ public class Paraula {
     private User user;
     private int ganadas;
     private int count;
-    private boolean fin;
 
     public Paraula() {
     }
 
-    public Paraula(User user, int ganadas, int count, boolean fin) {
+    public Paraula(User user, int ganadas, int count) {
         this.user = user;
         this.ganadas = ganadas;
         this.count = count;
-        this.fin = fin;
     }
 
 
@@ -48,10 +46,6 @@ public class Paraula {
         return count;
     }
 
-    public boolean isFin() {
-        return fin;
-    }
-
     public void setGanadas(int ganadas) {
         this.ganadas = ganadas;
     }
@@ -60,9 +54,6 @@ public class Paraula {
         this.count = count;
     }
 
-    public void setFin(boolean fin) {
-        this.fin = fin;
-    }
 }
 
 
