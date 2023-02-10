@@ -42,4 +42,36 @@ public interface Constants {
             "iranià", "opianina", "paranoia", "propinar", "aparionar", "posar-se", "aporrinar", "ninot", "nona", "dolenta",
             "aparionar", "aporrinar", "opinar", "paranoia", "pariona", "piorna", "pirona", "propina", "propinar" };
 
+
+    String[] anagrama = {"Nepal","Panel","Nacionalista – Altisonancia",
+    "Valora","Álvaro", "Frase","Fresa",
+    "Colinas","Nicolás","Pagar","Praga","Integrarla","Inglaterra",
+    "Quieren","Enrique","Cornisa","Narciso","Acuerdo","Ecuador",
+    "Japonés","Esponja","Amparo","Páramo",Deudora","Eduardo",
+    "Ramon","Norma","Camino","Mónica","Fotolitografía","Litofotografía",
+    "Animal","Lámina 	Matar","Marta","Saco","Cosa",
+    "Mora","Roma","Brasil","Silbar","Sentido","Destino",
+    "Saunas","Susana","Croacia","Arcaico","Tinieblas","Sibilante",
+    "Aretes","Teresa","Andalucía","Alucinada","Cronista","Cortinas",
+    "Ventilan – Valentín","Aparcamiento","Metacarpiano","Calienta","Alicante",
+    "Trama – Marta 	Ballena","Llenaba","Reposaré","Reposera",
+    "Cardiografía – Radiográfica","Conejo","Encojo","Demostración","Domesticaron",
+    "Desamparador – Desparramado","Polonia","Opalino","Sopera","Sopear",
+    "Conservadora – Conversadora","Ardientemente","Retenidamente","Áspero","Espora"
+    "Irónicamente – Renacimiento","Riesgo","Sergio","Aires – Aries",
+    "Escandalizar – Zascandilear","Agonista","Santiago","Presa","Pesar",
+    "Enfriamiento – Refinamiento","Calor","Colar","Esta","Ates",
+    "Romina – Marino 	Prisa – París 	Astringencia","Transigencia
+    "Materialismo – Memorialista 	Poder – Pedro 	Resto","Retos
+    "Enérgicamente – genéricamente 	Necrófila – Florencia 	Reías – Ríase
+    "Presuposición – Superposición 	Armonía – Mariano 	Terso – Teros
+    "Enamoramientos – Armoniosamente 	Salario – Rosalía 	Caracas – Cáscara
+    "Rectificable – Certificable 	Ovoide – Oviedo 	España – Apañes
+    "Reconquistados – Conquistadores 	Camelia – Micaela 	Alondra – Ladrona
+    "Escabullimiento – Bulliciosamente 	Enlodar – Leandro 	Conservación – Conversación
+    "Electromagnético – Magnetoeléctrico 	Delira – Lidera 	Derrocamiento – Recordamiento
+    "Imponderable – imperdonable 	Agranda – Granada 	Manila – Animal
+    "Armonización – Romanización 	Licúa – Lucía 	Ruanda – Anudar
+    "Pronosticación","Contraposición","Amor","Roma";"Protesta","Portaste"}
+
 }
