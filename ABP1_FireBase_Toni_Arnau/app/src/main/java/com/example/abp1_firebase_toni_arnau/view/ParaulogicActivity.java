@@ -32,10 +32,10 @@ public class ParaulogicActivity extends AppCompatActivity implements ViewActivit
 
     @Override
     public void createAllItemsAsGlobalWithGetters() {
-        textViewAcier = findViewById(R.id.ganadasParaulogic);
+        textViewAcier = findViewById(R.id.textPalaNumAcier);
         imageViewPala = findViewById(R.id.imagePala);
         editTextPala = findViewById(R.id.textLetraPala);
-        buttonPala = findViewById(R.id.buttonBomb);
+        buttonPala = findViewById(R.id.buttonPala);
 
     }
 

@@ -20,6 +20,7 @@ import androidx.annotation.NonNull;
 import com.example.abp1_firebase_toni_arnau.R;
 import com.example.abp1_firebase_toni_arnau.dao.Dao;
 import com.example.abp1_firebase_toni_arnau.model.Ahorcado;
+import com.example.abp1_firebase_toni_arnau.model.Paraula;
 import com.example.abp1_firebase_toni_arnau.model.User;
 import com.example.abp1_firebase_toni_arnau.utils.Constants;
 import com.example.abp1_firebase_toni_arnau.view.ExtraActivity;
@@ -50,6 +51,7 @@ public class Controller implements ControllerInterface {
     private User user;
     private Dao dao;
     private Ahorcado ahorcado;
+    private Paraula paraula;
 
     //Definición de todas las activities como variables globales
     private MainActivity mainActivity;
@@ -83,6 +85,7 @@ public class Controller implements ControllerInterface {
         this.user = new User();
         this.dao = new Dao();
         this.ahorcado = new Ahorcado();
+        this.paraula = new Paraula();
     }
 
     public void mainActivity(MainActivity mainActivity) {
@@ -299,6 +302,28 @@ public class Controller implements ControllerInterface {
     }
 
     private void createParaulogicActivityEvents() {
+
+        String inputPalabra = this.paraulogicActivity.getEditTextPala().getText().toString();
+
+        this.paraulogicActivity.getButtonPala().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                do {
+                    if(paraula.palabraExiste(inputPalabra) == true){
+                        paraulogicActivity.getTextViewAcier().setText(paraula.getCount());
+                        Toast.makeText(paraulogicActivity, " ¡¡ MUY BIEN !! Has acertado", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(paraulogicActivity, " ¡¡ No esta, SORRY", Toast.LENGTH_SHORT).show();
+                    }
+
+                } while (!paraula.juegofin());
+                ahorcadoActivity.finish();
+                ahorcadoActivity.recreate();
+
+            }
+        });
+
 
     }
 

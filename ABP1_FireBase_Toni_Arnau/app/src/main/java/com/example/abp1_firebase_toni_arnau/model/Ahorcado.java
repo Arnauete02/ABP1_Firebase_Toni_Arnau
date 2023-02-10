@@ -12,18 +12,14 @@ public class Ahorcado {
     private User user;
     private int ganadas;
     private int intentos;
-    private boolean acierto;
-    private boolean finJuego;
 
     public Ahorcado() {
     }
 
-    public Ahorcado(User user, int ganadas, boolean acierto, boolean finJuego) {
+    public Ahorcado(User user, int ganadas, int intentos) {
         this.user = user;
         this.ganadas = ganadas;
         this.intentos = 5;
-        this.acierto = acierto;
-        this.finJuego = false;
     }
 
 
@@ -69,14 +65,6 @@ public class Ahorcado {
         return intentos;
     }
 
-    public boolean isAcierto() {
-        return acierto;
-    }
-
-    public boolean isFinJuego() {
-        return finJuego;
-    }
-
     public void setUser(User user) {
         this.user = user;
     }
@@ -89,12 +77,5 @@ public class Ahorcado {
         this.intentos = intentos;
     }
 
-    public void setAcierto(boolean acierto) {
-        this.acierto = acierto;
-    }
-
-    public void setFinJuego(boolean finJuego) {
-        this.finJuego = finJuego;
-    }
 }
 
