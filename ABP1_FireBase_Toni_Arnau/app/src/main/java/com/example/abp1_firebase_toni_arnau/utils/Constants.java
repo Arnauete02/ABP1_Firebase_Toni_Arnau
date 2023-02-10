@@ -5,7 +5,6 @@ import com.example.abp1_firebase_toni_arnau.R;
 public interface Constants {
     int GOOGLE_SIGN_IN = 100;
     //Les arrays & things que serveixin per als jocs.
-    int GOOGLE_SIGN_IN = 0;
 
     int[] drawablesAhorcado = {R.drawable.dinamita_1, R.drawable.dinamita_2, R.drawable.dinamita_3, R.drawable.dinamita_4, R.drawable.dinamita_5};
 

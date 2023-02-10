@@ -74,16 +74,16 @@
                 app:srcCompat="@drawable/dinamita_1" />
         </androidx.cardview.widget.CardView>
 
-        <TextView
-            android:id="@+id/textView15"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:letterSpacing="0.1"
-            android:text="@string/textPalabra"
-            android:textColor="@color/secondaryDarkColor"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/cardView2" />
+    <TextView
+        android:id="@+id/textView15"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:letterSpacing="0.1"
+        android:text="@string/textPalabraBomb"
+        android:textColor="@color/secondaryDarkColor"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cardView2" />
 
         <View
             android:id="@+id/divider"

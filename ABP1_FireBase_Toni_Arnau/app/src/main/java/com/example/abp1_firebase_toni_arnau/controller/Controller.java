@@ -1,11 +1,13 @@
 package com.example.abp1_firebase_toni_arnau.controller;
 
+import static android.content.Intent.getIntent;
 import static android.provider.Settings.System.getString;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.Toast;
 
@@ -17,6 +19,7 @@ import androidx.annotation.NonNull;
 
 import com.example.abp1_firebase_toni_arnau.R;
 import com.example.abp1_firebase_toni_arnau.dao.Dao;
+import com.example.abp1_firebase_toni_arnau.model.Ahorcado;
 import com.example.abp1_firebase_toni_arnau.model.User;
 import com.example.abp1_firebase_toni_arnau.utils.Constants;
 import com.example.abp1_firebase_toni_arnau.view.ExtraActivity;
@@ -46,6 +49,7 @@ public class Controller implements ControllerInterface {
     public static final String default_web_client_id = "28931008152-jgtpdrmfpcdeoffse8luipdme6g3unn3.apps.googleusercontent.com";
     private User user;
     private Dao dao;
+    private Ahorcado ahorcado;
 
     //Definición de todas las activities como variables globales
     private MainActivity mainActivity;
@@ -78,6 +82,7 @@ public class Controller implements ControllerInterface {
 
         this.user = new User();
         this.dao = new Dao();
+        this.ahorcado = new Ahorcado();
     }
 
     public void mainActivity(MainActivity mainActivity) {
@@ -293,25 +298,70 @@ public class Controller implements ControllerInterface {
 
     }
 
-    private void createParaulogicActivityEvents(){
+    private void createParaulogicActivityEvents() {
 
     }
 
-    private void createAhorcadoActivityEvents(){
-        if (checkSession()) {
-            dao.get(checkEmail());
-        } else {
-            dao.get(user.getEmail());
-        }
+    private void createAhorcadoActivityEvents() {
+        String palabraSecreta = ahorcado.palabraFIn();
+        char[] palabraGuiones = ahorcado.cambioGuiones(palabraSecreta);
+
+        this.ahorcadoActivity.getTextViewGuiones().setText(palabraGuiones, 0, palabraGuiones.length);
 
         this.ahorcadoActivity.getButtonBomb().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                String textInput = ahorcadoActivity.getTextViewGuiones().getText().toString();
+                char[] tempGuionMostrar = ahorcado.cambioLetraGuion(palabraSecreta, palabraGuiones);
+                int x = 0;
 
+// si entra 1 letra / compara y autocambia -> error, avanza imagen, resta intento || acierto, cambia letra -> espera clickbutton
+// si entra +de1 letras -> quiere resolver / finjuego -> intentos = 0, imagen fin || gana++ -> reload
+
+                do {
+                    if (textInput.length() == 1) {
+                        if (tempGuionMostrar == null) {
+                            x++;
+                            ahorcadoActivity.getTextViewGuiones().setText(textInput);
+                            ahorcadoActivity.getImageViewBomb().setImageLevel(x);
+                            Toast.makeText(ahorcadoActivity, "OHHH... No has acertado", Toast.LENGTH_SHORT).show();
+                            ahorcado.setIntentos(ahorcado.getIntentos() - 1);
+                        } else {
+                            ahorcadoActivity.getTextViewGuiones().setText(tempGuionMostrar,0,palabraGuiones.length);
+                            Toast.makeText(ahorcadoActivity, " ¡¡ MUY BIEN !! Has acertado", Toast.LENGTH_SHORT).show();
+                        }
+
+                    } else if (textInput.length() > 1) {
+                        if (comporbar()) {
+                            ahorcado.setGanadas(ahorcado.getGanadas()+1);
+                            Toast.makeText(ahorcadoActivity, " ¡¡¡¡¡ HAS GANADO !!!!!", Toast.LENGTH_SHORT).show();
+                            ahorcadoActivity.finish();
+                            ahorcadoActivity.recreate();
+                        } else {
+                            Toast.makeText(ahorcadoActivity, " ¡¡¡¡¡ HAS PERDIDO !!!!!", Toast.LENGTH_SHORT).show();
+                            ahorcadoActivity.finish();
+                            ahorcadoActivity.recreate();
+                        }
+                    }
+                } while (ahorcado.aunGuiones(tempGuionMostrar) || ahorcado.getIntentos() != 0);
             }
         });
 
     }
+                /*
+                if (tempGuion == null) {
+                    x++;
+                    ahorcadoActivity.getTextViewGuiones().setText(tempText);
+                    ahorcadoActivity.getImageViewBomb().setImageLevel(x);
+                    ahorcadoActivity.setImageViewBomb();
+                    Toast.makeText(ahorcadoActivity, "No has acertado", Toast.LENGTH_SHORT).show();
+
+                } else {
+                    ahorcadoActivity.getTextViewGuiones().setText(tempGuion,0,palabraGuiones.length);
+                }
+                */
+
+
 
     //METHODS OF SHARED PREFERENCES
     private void saveSession() {
@@ -370,10 +420,33 @@ public class Controller implements ControllerInterface {
         this.perfilActivity.getTextViewProvider().setText(user.getProvider().toString());
     }
 
-    public void getSignedAccount(){
+    public void getSignedAccount() {
         dao.save(GoogleSignIn.getLastSignedInAccount(this.loginActivity));
 
         saveSession(GoogleSignIn.getLastSignedInAccount(this.loginActivity));
+    }
+
+    public char letraAhorcado() {
+        String letraTemp = this.ahorcadoActivity.getEditTextLetra().getText().toString();
+        do {
+            if (letraTemp.isEmpty() || letraTemp.length() == 0) {
+                Toast.makeText(ahorcadoActivity, "Introduce SOLO una Letra", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(ahorcadoActivity, "Comprobemos...", Toast.LENGTH_SHORT).show();
+            }
+        } while (letraTemp.length() == 1);
+        return letraTemp.charAt(0);
+    }
+
+    public boolean comporbar() {
+        String letraTemp = this.ahorcadoActivity.getEditTextLetra().getText().toString(); // coge el input (A,B)
+        char [] palabraConGuiones = this.ahorcadoActivity.getTextViewGuiones().getText().toString().toCharArray(); // Coge el array de los guines algunos cambiados
+
+        for (int i = 0; i < palabraConGuiones.length; i++) {
+           if(ahorcado.cambioLetraGuion(String.valueOf(letraTemp.charAt(i)), palabraConGuiones) != null);
+           return true;
+        }
+        return false;
     }
 
 }
