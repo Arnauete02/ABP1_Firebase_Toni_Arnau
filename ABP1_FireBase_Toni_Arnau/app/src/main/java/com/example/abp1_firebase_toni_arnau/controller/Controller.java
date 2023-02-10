@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
+import android.os.CountDownTimer;
 import android.view.View;
 import android.widget.Toast;
 
@@ -20,6 +21,7 @@ import androidx.annotation.NonNull;
 import com.example.abp1_firebase_toni_arnau.R;
 import com.example.abp1_firebase_toni_arnau.dao.Dao;
 import com.example.abp1_firebase_toni_arnau.model.Ahorcado;
+import com.example.abp1_firebase_toni_arnau.model.Anagrama;
 import com.example.abp1_firebase_toni_arnau.model.Paraula;
 import com.example.abp1_firebase_toni_arnau.model.User;
 import com.example.abp1_firebase_toni_arnau.utils.Constants;
@@ -52,6 +54,7 @@ public class Controller implements ControllerInterface {
     private Dao dao;
     private Ahorcado ahorcado;
     private Paraula paraula;
+    private Anagrama anagrama;
 
     //Definición de todas las activities como variables globales
     private MainActivity mainActivity;
@@ -86,6 +89,7 @@ public class Controller implements ControllerInterface {
         this.dao = new Dao();
         this.ahorcado = new Ahorcado();
         this.paraula = new Paraula();
+        this.anagrama = new Anagrama();
     }
 
     public void mainActivity(MainActivity mainActivity) {
@@ -133,6 +137,7 @@ public class Controller implements ControllerInterface {
     public void extraActivity(ExtraActivity extraActivity) {
         this.extraActivity = extraActivity;
         this.extraActivity.createAllItemsAsGlobalWithGetters();
+        createExtraActivityEvents();
     }
 
     //METHODS OF ACTIVTIES TO CHECK EVENT'S (CLICK, ETC.)
@@ -223,6 +228,7 @@ public class Controller implements ControllerInterface {
         });
     }
 
+    // HOME
     private void createHomeActivityEvents() {
         this.homeActivity.getBotonLogout().setOnClickListener(new View.OnClickListener() {
             @Override
@@ -269,6 +275,7 @@ public class Controller implements ControllerInterface {
         });
     }
 
+    // PROFILE
     private void createProfileActivityEvents() {
         if (checkSession()) {
             dao.get(checkEmail());
@@ -297,10 +304,46 @@ public class Controller implements ControllerInterface {
         });
     }
 
+    // STATS
     private void createEstadisticasActivityEvents() {
+
 
     }
 
+    // EXTRA
+    private void createExtraActivityEvents() {
+
+        String inputPalabra = this.extraActivity.getTextPalabraAna().getText().toString();
+        this.extraActivity.getTextAnaPalabra().setText(anagrama.palabra());
+
+        this.extraActivity.getButtoAna().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                CountDownTimer timer = new CountDownTimer(10, 1000) {
+                    public void onTick(long millisUntilFinished) {
+
+                        if (anagrama.palabrafinal(inputPalabra) == false) {
+                            Toast.makeText(paraulogicActivity, " ¡¡ NO, Vuelve a intentarlo", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(paraulogicActivity, " ¡¡ MUY BIEN !! Has acertado", Toast.LENGTH_SHORT).show();
+                            extraActivity.recreate();
+                        }
+                    }
+
+                    @Override
+                    public void onFinish() {
+                        Toast.makeText(paraulogicActivity, " ¡¡ SE ACABÓ EL TIEMPO", Toast.LENGTH_SHORT).show();
+                        extraActivity.getTextAnaPalabra().setText(anagrama.getPalabraDos());
+                        extraActivity.recreate();
+                    }
+                }.start();
+
+            }
+        });
+
+    }
+
+    // PARAULOGIC
     private void createParaulogicActivityEvents() {
 
         String inputPalabra = this.paraulogicActivity.getEditTextPala().getText().toString();
@@ -310,7 +353,7 @@ public class Controller implements ControllerInterface {
             public void onClick(View view) {
 
                 do {
-                    if(paraula.palabraExiste(inputPalabra) == true){
+                    if (paraula.palabraExiste(inputPalabra) == true) {
                         paraulogicActivity.getTextViewAcier().setText(paraula.getCount());
                         Toast.makeText(paraulogicActivity, " ¡¡ MUY BIEN !! Has acertado", Toast.LENGTH_SHORT).show();
                     } else {
@@ -318,7 +361,7 @@ public class Controller implements ControllerInterface {
                     }
 
                 } while (!paraula.juegofin());
-                paraula.setGanadas(paraula.getGanadas()+1);
+                paraula.setGanadas(paraula.getGanadas() + 1);
                 paraulogicActivity.finish();
                 paraulogicActivity.recreate();
 
@@ -328,6 +371,7 @@ public class Controller implements ControllerInterface {
 
     }
 
+    // AHORCADO
     private void createAhorcadoActivityEvents() {
         String palabraSecreta = ahorcado.palabraFIn();
         char[] palabraGuiones = ahorcado.cambioGuiones(palabraSecreta);
@@ -353,13 +397,13 @@ public class Controller implements ControllerInterface {
                             Toast.makeText(ahorcadoActivity, "OHHH... No has acertado", Toast.LENGTH_SHORT).show();
                             ahorcado.setIntentos(ahorcado.getIntentos() - 1);
                         } else {
-                            ahorcadoActivity.getTextViewGuiones().setText(tempGuionMostrar,0,palabraGuiones.length);
+                            ahorcadoActivity.getTextViewGuiones().setText(tempGuionMostrar, 0, palabraGuiones.length);
                             Toast.makeText(ahorcadoActivity, " ¡¡ MUY BIEN !! Has acertado", Toast.LENGTH_SHORT).show();
                         }
 
                     } else if (textInput.length() > 1) {
                         if (comporbar()) {
-                            ahorcado.setGanadas(ahorcado.getGanadas()+1);
+                            ahorcado.setGanadas(ahorcado.getGanadas() + 1);
                             Toast.makeText(ahorcadoActivity, " ¡¡¡¡¡ HAS GANADO !!!!!", Toast.LENGTH_SHORT).show();
                             ahorcadoActivity.finish();
                             ahorcadoActivity.recreate();
@@ -386,7 +430,6 @@ public class Controller implements ControllerInterface {
                     ahorcadoActivity.getTextViewGuiones().setText(tempGuion,0,palabraGuiones.length);
                 }
                 */
-
 
 
     //METHODS OF SHARED PREFERENCES
@@ -452,6 +495,7 @@ public class Controller implements ControllerInterface {
         saveSession(GoogleSignIn.getLastSignedInAccount(this.loginActivity));
     }
 
+    // MODEL METHODS
     public char letraAhorcado() {
         String letraTemp = this.ahorcadoActivity.getEditTextLetra().getText().toString();
         do {
@@ -466,11 +510,12 @@ public class Controller implements ControllerInterface {
 
     public boolean comporbar() {
         String letraTemp = this.ahorcadoActivity.getEditTextLetra().getText().toString(); // coge el input (A,B)
-        char [] palabraConGuiones = this.ahorcadoActivity.getTextViewGuiones().getText().toString().toCharArray(); // Coge el array de los guines algunos cambiados
+        char[] palabraConGuiones = this.ahorcadoActivity.getTextViewGuiones().getText().toString().toCharArray(); // Coge el array de los guines algunos cambiados
 
         for (int i = 0; i < palabraConGuiones.length; i++) {
-           if(ahorcado.cambioLetraGuion(String.valueOf(letraTemp.charAt(i)), palabraConGuiones) != null);
-           return true;
+            if (ahorcado.cambioLetraGuion(String.valueOf(letraTemp.charAt(i)), palabraConGuiones) != null)
+                ;
+            return true;
         }
         return false;
     }
