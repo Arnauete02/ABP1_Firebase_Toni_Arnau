@@ -314,36 +314,43 @@ public class Controller implements ControllerInterface {
     private void createExtraActivityEvents() {
 
         String inputPalabra = this.extraActivity.getTextPalabraAna().getText().toString();
-        this.extraActivity.getTextAnaPalabra().setText(anagrama.palabra());
+        this.extraActivity.getTextAnaPalabra().setText(anagrama.palabraUno());
 
-        this.extraActivity.getButtoAna().setOnClickListener(new View.OnClickListener() {
+        CountDownTimer timer = new CountDownTimer(10, 1000) {
+
             @Override
-            public void onClick(View view) {
-                CountDownTimer timer = new CountDownTimer(10, 1000) {
-                    public void onTick(long millisUntilFinished) {
-
+            public void onTick(long l) {
+                extraActivity.getButtoAna().setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
                         if (anagrama.palabrafinal(inputPalabra) == false) {
                             Toast.makeText(paraulogicActivity, " ¡¡ NO, Vuelve a intentarlo", Toast.LENGTH_SHORT).show();
                         } else {
                             Toast.makeText(paraulogicActivity, " ¡¡ MUY BIEN !! Has acertado", Toast.LENGTH_SHORT).show();
+                            anagrama.setGanadasAna(anagrama.getGanadasAna()+1); // STATS
                             extraActivity.recreate();
                         }
                     }
-
-                    @Override
-                    public void onFinish() {
-                        Toast.makeText(paraulogicActivity, " ¡¡ SE ACABÓ EL TIEMPO", Toast.LENGTH_SHORT).show();
-                        extraActivity.getTextAnaPalabra().setText(anagrama.getPalabraDos());
-                        extraActivity.recreate();
-                    }
-                }.start();
-
+                });
             }
-        });
 
+            @Override
+            public void onFinish() {
+                Toast.makeText(paraulogicActivity, " ¡¡ SE ACABÓ EL TIEMPO !!", Toast.LENGTH_SHORT).show();
+                extraActivity.getTextAnaPalabra().setText(anagrama.palabraDos());
+                extraActivity.recreate();
+            }
+        };
+        this.extraActivity.getTextAnaCrono().setText(timer.toString());
     }
 
     // PARAULOGIC
+
+    /*debe insertar la información en BBDD de una partida nueva al entrar por primera vez a esta pantalla.
+    - Se debe generar una imagen y soluciones aleatorio.
+    - Si se inserta una palabra y es correcta se añade al array de respuestas y se actualiza BBDD.
+    - Si no es correcta no se hace nada.
+    - Si se encuentran todas las palabras se genera una nueva partida. Se actualiza BBDD.*/
     private void createParaulogicActivityEvents() {
 
         String inputPalabra = this.paraulogicActivity.getEditTextPala().getText().toString();

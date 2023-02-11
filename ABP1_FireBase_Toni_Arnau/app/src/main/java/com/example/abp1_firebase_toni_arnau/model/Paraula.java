@@ -4,7 +4,7 @@ import com.example.abp1_firebase_toni_arnau.utils.Constants;
 
 public class Paraula {
     private User user;
-    private int ganadas;
+    private int ganadasPara;
     private int count;
 
     public Paraula() {
@@ -12,7 +12,7 @@ public class Paraula {
 
     public Paraula(User user, int ganadas, int count) {
         this.user = user;
-        this.ganadas = ganadas;
+        this.ganadasPara = ganadasPara;
         this.count = count;
     }
 
@@ -38,16 +38,16 @@ public class Paraula {
         return false;
     }
 
-    public int getGanadas() {
-        return ganadas;
+    public int getGanadasPara() {
+        return ganadasPara;
     }
 
     public int getCount() {
         return count;
     }
 
-    public void setGanadas(int ganadas) {
-        this.ganadas = ganadas;
+    public void setGanadasPara(int ganadas) {
+        this.ganadasPara = ganadas;
     }
 
     public void setCount(int count) {
