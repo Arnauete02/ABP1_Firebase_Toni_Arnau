@@ -20,7 +20,6 @@ public class Paraula {
         this.numPalabras = numPalabras;
     }
 
-
     public int escogerJuego(){
         String[][] matriz = Constants.paraulogics;
         Random r = new Random();
@@ -48,7 +47,7 @@ public class Paraula {
 
     public void insertPalabra(String input){
         String[] matriz = escogePartida();
-        matr
+
         for(String m : matriz){
 
 

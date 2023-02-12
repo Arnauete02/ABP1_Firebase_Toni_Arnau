@@ -22,7 +22,6 @@ public class Ahorcado {
         this.intentos = 5;
     }
 
-
     public char[] cambioLetraGuion(String palabraSecreta, char[] palabraGuiones) {
         for (int i = 0; i < palabraSecreta.length(); i++) {
             if (palabraSecreta.charAt(i) == Controller.getInstance().letraAhorcado()) {

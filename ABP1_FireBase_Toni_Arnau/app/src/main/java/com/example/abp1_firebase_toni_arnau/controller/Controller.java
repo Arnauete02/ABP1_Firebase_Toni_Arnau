@@ -47,7 +47,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-public class Controller implements ControllerInterface{
+public class Controller implements ControllerInterface {
     public static final String default_web_client_id = "28931008152-jgtpdrmfpcdeoffse8luipdme6g3unn3.apps.googleusercontent.com";
     private User user;
     private Stats stats;
@@ -71,7 +71,7 @@ public class Controller implements ControllerInterface{
 
     public static Controller getInstance() {
         if (controller == null) controller = new Controller();
-        return  controller;
+        return controller;
     }
 
     //Se instancia todas las activities en el constructor para prevenir nullPointers
@@ -142,7 +142,9 @@ public class Controller implements ControllerInterface{
     }
 
     //METHODS OF ACTIVTIES TO CHECK EVENT'S (CLICK, ETC.)
-    private void createLoginActivityEvents(){
+
+    // LOGIN
+    private void createLoginActivityEvents() {
         SharedPreferences prefs = this.loginActivity.getSharedPreferences(
                 "PREFERENCES_FILE_KEY", Context.MODE_PRIVATE);
 
@@ -310,80 +312,13 @@ public class Controller implements ControllerInterface{
         });
     }
 
-    private void createEstadisticasActivityEvents(){
+    // STATS
+    private void createEstadisticasActivityEvents() {
         if (checkSession()) {
             dao.getStat(checkEmail());
         } else {
             dao.getStat(stats.getEmail());
         }
-    }
-
-    // EXTRA
-    private void createExtraActivityEvents() {
-
-        String inputPalabra = this.extraActivity.getTextPalabraAna().getText().toString();
-        this.extraActivity.getTextAnaPalabra().setText(anagrama.palabraUno());
-
-        CountDownTimer timer = new CountDownTimer(10, 1000) {
-
-            @Override
-            public void onTick(long l) {
-                extraActivity.getButtoAna().setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if (anagrama.palabrafinal(inputPalabra) == false) {
-                            Toast.makeText(paraulogicActivity, " ¡¡ NO, Vuelve a intentarlo", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(paraulogicActivity, " ¡¡ MUY BIEN !! Has acertado", Toast.LENGTH_SHORT).show();
-                            anagrama.setGanadasAna(anagrama.getGanadasAna()+1); // STATS
-                            extraActivity.recreate();
-                        }
-                    }
-                });
-            }
-
-            @Override
-            public void onFinish() {
-                Toast.makeText(paraulogicActivity, " ¡¡ SE ACABÓ EL TIEMPO !!", Toast.LENGTH_SHORT).show();
-                extraActivity.getTextAnaPalabra().setText(anagrama.palabraDos());
-                extraActivity.recreate();
-            }
-        };
-        this.extraActivity.getTextAnaCrono().setText(timer.toString());
-    }
-
-    // PARAULOGIC
-
-    /*debe insertar la información en BBDD de una partida nueva al entrar por primera vez a esta pantalla.
-    - Se debe generar una imagen y soluciones aleatorio.
-    - Si se inserta una palabra y es correcta se añade al array de respuestas y se actualiza BBDD.
-    - Si no es correcta no se hace nada.
-    - Si se encuentran todas las palabras se genera una nueva partida. Se actualiza BBDD.*/
-    private void createParaulogicActivityEvents() {
-
-        String inputPalabra = this.paraulogicActivity.getEditTextPala().getText().toString();
-
-        this.paraulogicActivity.getButtonPala().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                do {
-                    if (paraula.palabraExiste(inputPalabra) == true) {
-                        paraulogicActivity.getTextViewAcier().setText(paraula.getCount());
-                        Toast.makeText(paraulogicActivity, " ¡¡ MUY BIEN !! Has acertado", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(paraulogicActivity, " ¡¡ No esta, SORRY", Toast.LENGTH_SHORT).show();
-                    }
-
-                } while (!paraula.juegofin());
-                paraula.setGanadas(paraula.getGanadas() + 1);
-                paraulogicActivity.finish();
-                paraulogicActivity.recreate();
-
-            }
-        });
-
-
     }
 
     // AHORCADO
@@ -433,7 +368,8 @@ public class Controller implements ControllerInterface{
         });
 
     }
-                /*
+
+    /*
                 if (tempGuion == null) {
                     x++;
                     ahorcadoActivity.getTextViewGuiones().setText(tempText);
@@ -446,6 +382,63 @@ public class Controller implements ControllerInterface{
                 }
                 */
 
+    // PARAULOGIC
+    private void createParaulogicActivityEvents() {
+        String inputPalabra = this.paraulogicActivity.getEditTextPala().getText().toString();
+
+        /*this.paraulogicActivity.getButtonPala().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                do {
+                    if (paraula.palabraExiste(inputPalabra) == true) {
+                        paraulogicActivity.getTextViewAcier().setText(paraula.getCount());
+                        Toast.makeText(paraulogicActivity, " ¡¡ MUY BIEN !! Has acertado", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(paraulogicActivity, " ¡¡ No esta, SORRY", Toast.LENGTH_SHORT).show();
+                    }
+
+                } while (!paraula.juegofin());
+                paraula.setGanadas(paraula.getGanadas() + 1);
+                paraulogicActivity.finish();
+                paraulogicActivity.recreate();
+            }
+        });*/
+    }
+
+    // EXTRA
+    private void createExtraActivityEvents() {
+
+        String inputPalabra = this.extraActivity.getTextPalabraAna().getText().toString();
+        this.extraActivity.getTextAnaPalabra().setText(anagrama.palabraUno());
+
+        CountDownTimer timer = new CountDownTimer(10, 1000) {
+
+            @Override
+            public void onTick(long l) {
+                extraActivity.getButtoAna().setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (anagrama.palabrafinal(inputPalabra) == false) {
+                            Toast.makeText(paraulogicActivity, " ¡¡ NO, Vuelve a intentarlo", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(paraulogicActivity, " ¡¡ MUY BIEN !! Has acertado", Toast.LENGTH_SHORT).show();
+                            anagrama.setGanadasAna(anagrama.getGanadasAna() + 1); // STATS
+                            extraActivity.recreate();
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void onFinish() {
+                Toast.makeText(paraulogicActivity, " ¡¡ SE ACABÓ EL TIEMPO !!", Toast.LENGTH_SHORT).show();
+                extraActivity.getTextAnaPalabra().setText(anagrama.palabraDos());
+                extraActivity.recreate();
+            }
+        };
+        this.extraActivity.getTextAnaCrono().setText(timer.toString());
+    }
 
     //METHODS OF SHARED PREFERENCES
     private void saveSession() {
@@ -511,7 +504,6 @@ public class Controller implements ControllerInterface{
         this.estadisticasActivity.getUltimasesion().setText(String.valueOf(stats.getFecha()));
     }
 
-    public void getSignedAccount(){
     public void getSignedAccount() {
         dao.save(GoogleSignIn.getLastSignedInAccount(this.loginActivity));
         dao.saveStats_init(GoogleSignIn.getLastSignedInAccount(this.loginActivity).getEmail());
