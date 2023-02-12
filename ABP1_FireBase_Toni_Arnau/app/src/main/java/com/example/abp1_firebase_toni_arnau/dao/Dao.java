@@ -22,8 +22,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.inject.Provider;
 
+import java.lang.reflect.Field;
 import java.sql.Date;
 import java.util.HashMap;
+import java.util.Set;
 
 public class Dao {
     private static Dao dao;
@@ -34,13 +36,13 @@ public class Dao {
         return dao;
     }
 
-    // METHODS DATABASE
+    // METHODS SAVE USER WITH EMAIL & PASSWORD
     public void save(User user) {
         db = FirebaseFirestore.getInstance();
 
         HashMap<String, String> collection = new HashMap<String, String>();
 
-        if(user.getName() != null) {
+        if (user.getName() != null) {
             collection.put("name", user.getName());
         } else {
             collection.put("name", null);
@@ -58,19 +60,19 @@ public class Dao {
                 .set(collection, SetOptions.merge());
     }
 
-    //METHOD SAVE WITH GOOGLE SIGN IN
+    // METHOD SAVE WITH GOOGLE SIGN IN
     public void save(GoogleSignInAccount signInAccount) {
         db = FirebaseFirestore.getInstance();
 
         HashMap<String, String> collection = new HashMap<String, String>();
 
-        if(signInAccount.getDisplayName() != null) {
+        if (signInAccount.getDisplayName() != null) {
             collection.put("name", signInAccount.getDisplayName());
         } else {
             collection.put("name", null);
         }
 
-        if(signInAccount.getGivenName() != null){
+        if (signInAccount.getGivenName() != null) {
             collection.put("username", signInAccount.getGivenName());
         } else {
             collection.put("username", null);
@@ -82,82 +84,79 @@ public class Dao {
                 .set(collection, SetOptions.merge());
     }
 
-    public void save(Stats stats) {
+    // METHOD SAVE STATS
+    public void saveStats_init(String email) {
         db = FirebaseFirestore.getInstance();
 
-        HashMap<String, String> collection = new HashMap<String, String>();
+        HashMap<String, Object> collection = new HashMap<>();
+        collection.put("numeroInicios", FieldValue.increment(1));
+        collection.put("fecha", FieldValue.serverTimestamp());
 
-        if(stats.getGanadasAhorcado() != 0) {
-            collection.put("ganadasAhorcado", String.valueOf(stats.getGanadasAhorcado()));
-        } else {
-            collection.put("ganadasAhorcado", "0");
-        }
-
-        if(stats.getGanadasParaulogic() != 0) {
-            collection.put("ganadasParaulogic", String.valueOf(stats.getGanadasParaulogic()));
-        } else {
-            collection.put("ganadasParaulogic", "0");
-        }
-
-        //TODO: numeroInicios
-
-        if(stats.getFecha() != null) {
-            collection.put("ganadasParaulogic", String.valueOf(stats.getFecha()));
-        } else {
-            collection.put("ganadasParaulogic", Timestamp.now().toString());
-        }
-
-        db.collection("stats").document(stats.getEmail())
+        db.collection("stats")
+                .document(email)
                 .set(collection, SetOptions.merge());
     }
 
-    public void get(String email, String type) {
+    // METHOD TO GET USER
+    public void getUser(String email) {
         db = FirebaseFirestore.getInstance();
 
-        switch (type){
-            case "users":
-                db.collection("users").document(email)
-                        .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                if (task.isSuccessful()) {
-                                    DocumentSnapshot documentSnapshot = task.getResult();
+        db.collection("users").document(email)
+                .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot documentSnapshot = task.getResult();
 
-                                    User user = new User(email, Providers.valueOf(documentSnapshot.get("provider").toString()));
+                            User user = new User(email, Providers.valueOf(documentSnapshot.get("provider").toString()));
 
-                                    if (documentSnapshot.get("name") != null) {
-                                        if (!documentSnapshot.get("name").toString().equals("")) {
-                                            user.setName(documentSnapshot.get("name").toString());
-                                        }
-                                    }
-
-                                    if (documentSnapshot.get("username") != null) {
-                                        if (!documentSnapshot.get("username").toString().equals("")) {
-                                            user.setUsername(documentSnapshot.get("username").toString());
-                                        }
-                                    }
-
-                                    Controller.getInstance().returnCollectedData(user);
+                            if (documentSnapshot.get("name") != null) {
+                                if (!documentSnapshot.get("name").toString().equals("")) {
+                                    user.setName(documentSnapshot.get("name").toString());
                                 }
                             }
-                        });
 
-            case "stats":
-                db.collection("stats").document(email)
-                        .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                if (task.isSuccessful()) {
-                                    DocumentSnapshot documentSnapshot = task.getResult();
-
-                                    Stats stats = new Stats(email, Integer.parseInt(documentSnapshot.get("ganadasAhorcado").toString()),
-                                            Integer.parseInt(documentSnapshot.get("ganadasParaulogic").toString()), Integer.parseInt(documentSnapshot.get("numeroInicios").toString()), Date.valueOf(documentSnapshot.get("ganadasParaulogic").toString()));
-
-                                    Controller.getInstance().returnCollectedData(stats);
+                            if (documentSnapshot.get("username") != null) {
+                                if (!documentSnapshot.get("username").toString().equals("")) {
+                                    user.setUsername(documentSnapshot.get("username").toString());
                                 }
                             }
-                        });
-        }
+
+                            Controller.getInstance().returnCollectedData(user);
+                        }
+                    }
+                });
+    }
+
+    // METHOD TO GET STAT
+    public void getStat(String email) {
+        db = FirebaseFirestore.getInstance();
+
+        db.collection("stats").document(email)
+                .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot documentSnapshot = task.getResult();
+
+                            Stats stats = new Stats(email, Integer.parseInt(documentSnapshot.get("numeroInicios").toString()), documentSnapshot.get("fecha").toString());
+
+                            if (documentSnapshot.get("ganadasAhorcado") == null) {
+                                stats.setGanadasAhorcado(0);
+                            } else {
+                                stats.setGanadasAhorcado(Integer.parseInt(documentSnapshot.get("ganadasAhorcado").toString()));
+                            }
+
+                            if (documentSnapshot.get("ganadasParaulogic") == null) {
+                                stats.setGanadasAhorcado(0);
+                            } else {
+                                stats.setGanadasAhorcado(Integer.parseInt(documentSnapshot.get("ganadasParaulogic").toString()));
+                            }
+
+                            Controller.getInstance().returnCollectedData(stats);
+                        }
+                    }
+                });
     }
 
     public void exists(String email) {
@@ -176,11 +175,10 @@ public class Dao {
                 });
     }
 
-    public void delete (User user) {
+    public void delete(User user) {
         db = FirebaseFirestore.getInstance();
 
         db.collection("users").document(user.getEmail())
                 .delete();
     }
-
 }

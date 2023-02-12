@@ -72,8 +72,6 @@ public class LoginActivity extends AppCompatActivity implements ViewActivity {
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
                                 Controller.getInstance().getSignedAccount();
-                            } else {
-
                             }
                         }
                     });

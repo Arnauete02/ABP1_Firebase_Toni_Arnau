@@ -134,6 +134,7 @@ public class Controller implements ControllerInterface{
         //CHECK SESSION WITH SHEARED PREFERENCES, IF I DIDN'T DO LOG OUT
         if (checkSession()) {
             switchActivity(this.loginActivity, this.homeActivity);
+            dao.saveStats_init(checkEmail());
         }
 
         // REGISTER WITH EMAIL & PASSWORD
@@ -154,7 +155,9 @@ public class Controller implements ControllerInterface{
                                         saveSession();
                                         user.setEmail(mail);
                                         user.setProvider(Providers.LOGIN);
+
                                         dao.save(user);
+                                        dao.saveStats_init(mail);
                                     } else {
                                         showAlert(loginActivity, "Error en el registro.");
                                     }
@@ -184,6 +187,8 @@ public class Controller implements ControllerInterface{
                                         saveSession();
                                         user.setEmail(mail);
                                         user.setProvider(Providers.LOGIN);
+
+                                        dao.saveStats_init(mail);
                                     } else {
                                         showAlert(loginActivity, "Error en el login.");
                                     }
@@ -262,9 +267,9 @@ public class Controller implements ControllerInterface{
 
     private void createProfileActivityEvents() {
         if (checkSession()) {
-            dao.get(checkEmail(), "users");
+            dao.getUser(checkEmail());
         } else {
-            dao.get(user.getEmail(), "users");
+            dao.getUser(user.getEmail());
         }
 
         // DO IT BECAUSE I CAN'T MODIFY MY GOOGLE EMAIL ACCOUNT
@@ -290,9 +295,9 @@ public class Controller implements ControllerInterface{
 
     private void createEstadisticasActivityEvents(){
         if (checkSession()) {
-            dao.get(checkEmail(), "stats");
+            dao.getStat(checkEmail());
         } else {
-            dao.get(stats.getEmail(), "stats");
+            dao.getStat(stats.getEmail());
         }
     }
 
@@ -354,14 +359,15 @@ public class Controller implements ControllerInterface{
     }
 
     public void returnCollectedData(Stats stats) {
-        this.estadisticasActivity.getGanadasAhorcado().setText(stats.getGanadasAhorcado());
-        this.estadisticasActivity.getGanadasParaulogic().setText(stats.getGanadasParaulogic());
-        this.estadisticasActivity.getInicioSesion().setText(stats.getNumeroInicios());
-        this.estadisticasActivity.getUltimasesion().setText(stats.getFecha().toString());
+        this.estadisticasActivity.getGanadasAhorcado().setText(String.valueOf(stats.getGanadasAhorcado()));
+        this.estadisticasActivity.getGanadasParaulogic().setText(String.valueOf(stats.getGanadasParaulogic()));
+        this.estadisticasActivity.getInicioSesion().setText(String.valueOf(stats.getNumeroInicios()));
+        this.estadisticasActivity.getUltimasesion().setText(String.valueOf(stats.getFecha()));
     }
 
     public void getSignedAccount(){
         dao.save(GoogleSignIn.getLastSignedInAccount(this.loginActivity));
+        dao.saveStats_init(GoogleSignIn.getLastSignedInAccount(this.loginActivity).getEmail());
 
         saveSession(GoogleSignIn.getLastSignedInAccount(this.loginActivity));
     }
