@@ -7,6 +7,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.graphics.drawable.Drawable;
 import android.os.CountDownTimer;
 import android.view.View;
@@ -20,6 +21,7 @@ import androidx.annotation.NonNull;
 
 import com.example.abp1_firebase_toni_arnau.R;
 import com.example.abp1_firebase_toni_arnau.dao.Dao;
+import com.example.abp1_firebase_toni_arnau.model.Stats;
 import com.example.abp1_firebase_toni_arnau.model.Ahorcado;
 import com.example.abp1_firebase_toni_arnau.model.Anagrama;
 import com.example.abp1_firebase_toni_arnau.model.Paraula;
@@ -39,18 +41,16 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.GoogleAuthProvider;
 
-public class Controller implements ControllerInterface {
+public class Controller implements ControllerInterface{
     public static final String default_web_client_id = "28931008152-jgtpdrmfpcdeoffse8luipdme6g3unn3.apps.googleusercontent.com";
     private User user;
+    private Stats stats;
     private Dao dao;
     private Ahorcado ahorcado;
     private Paraula paraula;
@@ -71,7 +71,7 @@ public class Controller implements ControllerInterface {
 
     public static Controller getInstance() {
         if (controller == null) controller = new Controller();
-        return controller;
+        return  controller;
     }
 
     //Se instancia todas las activities en el constructor para prevenir nullPointers
@@ -86,6 +86,7 @@ public class Controller implements ControllerInterface {
         this.extraActivity = new ExtraActivity();
 
         this.user = new User();
+        this.stats = new Stats();
         this.dao = new Dao();
         this.ahorcado = new Ahorcado();
         this.paraula = new Paraula();
@@ -141,13 +142,14 @@ public class Controller implements ControllerInterface {
     }
 
     //METHODS OF ACTIVTIES TO CHECK EVENT'S (CLICK, ETC.)
-    private void createLoginActivityEvents() {
+    private void createLoginActivityEvents(){
         SharedPreferences prefs = this.loginActivity.getSharedPreferences(
                 "PREFERENCES_FILE_KEY", Context.MODE_PRIVATE);
 
         //CHECK SESSION WITH SHEARED PREFERENCES, IF I DIDN'T DO LOG OUT
         if (checkSession()) {
             switchActivity(this.loginActivity, this.homeActivity);
+            dao.saveStats_init(checkEmail());
         }
 
         // REGISTER WITH EMAIL & PASSWORD
@@ -168,7 +170,9 @@ public class Controller implements ControllerInterface {
                                         saveSession();
                                         user.setEmail(mail);
                                         user.setProvider(Providers.LOGIN);
+
                                         dao.save(user);
+                                        dao.saveStats_init(mail);
                                     } else {
                                         showAlert(loginActivity, "Error en el registro.");
                                     }
@@ -198,6 +202,8 @@ public class Controller implements ControllerInterface {
                                         saveSession();
                                         user.setEmail(mail);
                                         user.setProvider(Providers.LOGIN);
+
+                                        dao.saveStats_init(mail);
                                     } else {
                                         showAlert(loginActivity, "Error en el login.");
                                     }
@@ -278,9 +284,9 @@ public class Controller implements ControllerInterface {
     // PROFILE
     private void createProfileActivityEvents() {
         if (checkSession()) {
-            dao.get(checkEmail());
+            dao.getUser(checkEmail());
         } else {
-            dao.get(user.getEmail());
+            dao.getUser(user.getEmail());
         }
 
         // DO IT BECAUSE I CAN'T MODIFY MY GOOGLE EMAIL ACCOUNT
@@ -304,10 +310,12 @@ public class Controller implements ControllerInterface {
         });
     }
 
-    // STATS
-    private void createEstadisticasActivityEvents() {
-
-
+    private void createEstadisticasActivityEvents(){
+        if (checkSession()) {
+            dao.getStat(checkEmail());
+        } else {
+            dao.getStat(stats.getEmail());
+        }
     }
 
     // EXTRA
@@ -496,8 +504,17 @@ public class Controller implements ControllerInterface {
         this.perfilActivity.getTextViewProvider().setText(user.getProvider().toString());
     }
 
+    public void returnCollectedData(Stats stats) {
+        this.estadisticasActivity.getGanadasAhorcado().setText(String.valueOf(stats.getGanadasAhorcado()));
+        this.estadisticasActivity.getGanadasParaulogic().setText(String.valueOf(stats.getGanadasParaulogic()));
+        this.estadisticasActivity.getInicioSesion().setText(String.valueOf(stats.getNumeroInicios()));
+        this.estadisticasActivity.getUltimasesion().setText(String.valueOf(stats.getFecha()));
+    }
+
+    public void getSignedAccount(){
     public void getSignedAccount() {
         dao.save(GoogleSignIn.getLastSignedInAccount(this.loginActivity));
+        dao.saveStats_init(GoogleSignIn.getLastSignedInAccount(this.loginActivity).getEmail());
 
         saveSession(GoogleSignIn.getLastSignedInAccount(this.loginActivity));
     }
