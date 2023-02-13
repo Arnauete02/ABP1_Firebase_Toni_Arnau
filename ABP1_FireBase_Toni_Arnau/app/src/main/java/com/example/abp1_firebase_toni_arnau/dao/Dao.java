@@ -159,6 +159,20 @@ public class Dao {
                 .set(collection, SetOptions.merge());
     }
 
+    // METHOD TO SAVE ANAGRAMA
+    public void saveAnagrama(String email) {
+        HashMap<String, Object> collectionAnagrama = new HashMap<>();
+
+        String palabra = new Anagrama().palabraGrupo();
+
+        collectionAnagrama.put("palabraUno", palabra.split("-")[0]);
+        collectionAnagrama.put("palabraDos", palabra.split("-")[1]);
+
+        db.collection("anagrama")
+                .document(email)
+                .set(collectionAnagrama, SetOptions.merge());
+    }
+
     // METHOD TO GET USER
     public void getUser(String email) {
         db.collection("users").document(email)
@@ -240,6 +254,7 @@ public class Dao {
                 });
     }
 
+    // METHOD TO GET ANAGRAMA
     public void getAnagrama(String email, String type) {
         db.collection("anagrama").document(email)
                 .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -267,31 +282,6 @@ public class Dao {
                 });
     }
 
-    // --------------------------------------------------------------------------------------------
-    // ANAGRAMA
-
-    public void saveAnagrama(String email, String palabraUno, String palabraDos) {
-        HashMap<String, Object> collectionAnagrama = new HashMap<String, Object>();
-
-        collectionAnagrama.put("palabraUno", palabraUno);
-        collectionAnagrama.put("palabraDos", palabraDos);
-
-        db.collection("anagrama").document(email).set(collectionAnagrama, SetOptions.merge());
-    }
-
-    public void saveAnagrama(String email) {
-        HashMap<String, Object> collectionAnagrama = new HashMap<>();
-
-        String palabra = new Anagrama().palabraGrupo();
-
-        collectionAnagrama.put("palabraUno", palabra.split("-")[0]);
-        collectionAnagrama.put("palabraDos", palabra.split("-")[1]);
-
-        db.collection("anagrama")
-                .document(email)
-                .set(collectionAnagrama, SetOptions.merge());
-    }
-
     public void saveParaula(String email, int numPalabras, int count) {
         HashMap<String, Object> collectionParaula = new HashMap<>();
 
@@ -300,7 +290,6 @@ public class Dao {
 
         db.collection("ahorcado").document(email).set(collectionParaula, SetOptions.merge());
     }
-
 
     public void saveParaula(String email) {
         HashMap<String, Object> collectionAnagrama = new HashMap<>();
@@ -313,7 +302,6 @@ public class Dao {
                 .set(collectionAnagrama, SetOptions.merge());
     }
 
-
     public void agregarParaula(Paraula paraula) {
         HashMap<String, Object> collectionAnagrama = new HashMap<String, Object>();
         collectionAnagrama.put("count", paraula.getCount());
@@ -321,7 +309,6 @@ public class Dao {
 
         db.collection("palabra").document(paraula.getEmail()).set(collectionAnagrama, SetOptions.merge());
     }
-
 
     public Task<DocumentSnapshot> getParaula(String email) {
         return db.collection("collectionParaula").document(email).get();
@@ -332,7 +319,7 @@ public class Dao {
     }
 
 
-// ____--------------------------------------------------------------------
+// --------------------------------------------------------------------------
 
     public void existsAhorcado(String email) {
         db.collection("ahorcado").document(email)

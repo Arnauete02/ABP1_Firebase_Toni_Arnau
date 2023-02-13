@@ -332,7 +332,6 @@ public class Controller implements ControllerInterface {
         dao.getStat(email);
     }
 
-
     // AHORCADO
     private void createAhorcadoActivityEvents() {
         dao.existsAhorcado(email);
@@ -434,6 +433,9 @@ public class Controller implements ControllerInterface {
             }
         });
     }
+            }
+        });
+    }
 
 
 
@@ -512,7 +514,7 @@ public class Controller implements ControllerInterface {
         String respuesta = "";
         if (ahorcado.getRespuestas().length != 0) {
             for (int i = 0; i < ahorcado.getRespuestas().length; i++) {
-                respuesta += ahorcado.getRespuestas()[i] + " ";
+                respuesta += ahorcado.getRespuestas()[i];
             }
         }
 
@@ -520,16 +522,19 @@ public class Controller implements ControllerInterface {
 
         String palabraGuiones = "";
 
-        if (!respuesta.isEmpty()) {
-            for (int i = 0; i < ahorcado.getPalabra().length(); i++) {
+        for (int i = 0; i < ahorcado.getPalabra().length(); i++) {
+            if (respuesta.length() != 0) {
                 for (int j = 0; j < respuesta.length(); j++) {
-                    if (ahorcado.getPalabra().charAt(i) != respuesta.charAt(j)) {
-                        palabraGuiones += " _ ";
-                    } else {
+                    if (ahorcado.getPalabra().charAt(i) == respuesta.charAt(j)) {
                         palabraGuiones += respuesta.charAt(j);
+                    } else {
+                        palabraGuiones += " _ ";
                     }
                 }
+            } else {
+                palabraGuiones += " _ ";
             }
+
         }
 
         this.ahorcadoActivity.getPalabraGuionesBomb().setText(palabraGuiones);
