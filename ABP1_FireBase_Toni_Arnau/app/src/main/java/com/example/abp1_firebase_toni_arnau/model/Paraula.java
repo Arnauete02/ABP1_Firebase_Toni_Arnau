@@ -2,6 +2,8 @@ package com.example.abp1_firebase_toni_arnau.model;
 
 import com.example.abp1_firebase_toni_arnau.utils.Constants;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 public class Paraula {
@@ -20,6 +22,10 @@ public class Paraula {
         this.numPalabras = numPalabras;
     }
 
+    public int tamañoMatriz(){
+        int t = escogePartida().length;
+        return t;
+    }
     public int escogerJuego(){
         String[][] matriz = Constants.paraulogics;
         Random r = new Random();
@@ -47,11 +53,8 @@ public class Paraula {
 
     public void insertPalabra(String input){
         String[] matriz = escogePartida();
-
-        for(String m : matriz){
-
-
-        }
+        ArrayList<String> m = (ArrayList<String>) Arrays.asList(matriz);
+        m.add(input);
     }
 
     public int getGanadasPara() {

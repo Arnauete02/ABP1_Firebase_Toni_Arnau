@@ -19,8 +19,8 @@ public class Anagrama {
         this.user = user;
         this.palabraInput = palabraInput;
         this.palabraGrupo = palabraGrupo();
-        this.palabraUno = palabraUno;
-        this.palabraDos = palabraDos;
+        this.palabraUno = palabraUno();
+        this.palabraDos = palabraDos();
         this.ganadasAna = 0;
     }
 
@@ -51,6 +51,26 @@ public class Anagrama {
         palabraDos = p[1];
         return palabraDos;
 
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public String getPalabraInput() {
+        return palabraInput;
+    }
+
+    public String getPalabraGrupo() {
+        return palabraGrupo;
+    }
+
+    public String getPalabraUno() {
+        return palabraUno;
+    }
+
+    public String getPalabraDos() {
+        return palabraDos;
     }
 
     public int getGanadasAna() {
