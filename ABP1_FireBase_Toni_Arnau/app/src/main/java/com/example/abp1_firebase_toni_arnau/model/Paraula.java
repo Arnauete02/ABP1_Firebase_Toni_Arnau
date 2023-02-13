@@ -2,8 +2,6 @@ package com.example.abp1_firebase_toni_arnau.model;
 
 import com.example.abp1_firebase_toni_arnau.utils.Constants;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Random;
 
 public class Paraula {
@@ -11,6 +9,7 @@ public class Paraula {
     private int ganadasPara;
     private int numPalabras;
     private int count;
+    private String imagen;
 
     public Paraula() {
     }
@@ -52,14 +51,12 @@ public class Paraula {
         return false;
     }
 
-    public void insertPalabra(String input) {
-        String[] matriz = escogePartida();
-        ArrayList<String> m = (ArrayList<String>) Arrays.asList(matriz);
-        m.add(input);
-    }
-
     public String getEmail() {
         return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public int getGanadasPara() {
@@ -84,6 +81,14 @@ public class Paraula {
 
     public void setCount(int count) {
         this.count = count;
+    }
+
+    public Object getImagen() {
+        return imagen;
+    }
+
+    public void setImagen(String imagen) {
+        this.imagen = imagen;
     }
 }
 
