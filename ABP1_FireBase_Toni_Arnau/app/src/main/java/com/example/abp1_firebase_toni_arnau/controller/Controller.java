@@ -433,9 +433,6 @@ public class Controller implements ControllerInterface {
             }
         });
     }
-            }
-        });
-    }
 
 
 
