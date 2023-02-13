@@ -382,7 +382,7 @@ public class Controller implements ControllerInterface {
 
     // PARAULOGIC
     private void createParaulogicActivityEvents() {
-        dao.existsAnagrama(email);
+        dao.existsParaula(email);
 
 
         this.paraulogicActivity.getImageViewPala().setImageResource(R.drawable.p2);
