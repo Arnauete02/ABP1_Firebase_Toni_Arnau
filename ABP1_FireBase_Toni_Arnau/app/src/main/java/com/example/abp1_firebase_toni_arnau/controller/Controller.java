@@ -51,6 +51,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import org.checkerframework.checker.units.qual.A;
+
 import java.util.Arrays;
 
 public class Controller implements ControllerInterface {
@@ -334,37 +336,45 @@ public class Controller implements ControllerInterface {
     private void createAhorcadoActivityEvents() {
         dao.existsAhorcado(email);
 
-
         this.ahorcadoActivity.getButtonBomb().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO: Falta recuperar la info de Ahorcado ya que no la coge al ser un evento.
-
+                dao.getAhorcado(email, "class");
 
                 String palabraGuiones = ahorcadoActivity.getPalabraGuionesBomb().getText().toString();
                 String letra = ahorcadoActivity.getTextLetraBomb().getText().toString();
+                char[] respuestas = new char[0];
+
 
                 for (int i = 0; i < ahorcado.getPalabra().length(); i++) {
+                    palabraGuiones += " _ ";
+
                     if (ahorcado.getPalabra().charAt(i) == letra.charAt(0)) {
-                        for (int j = 0; j < ahorcado.getRespuestas().length; i++) {
-                            if (ahorcado.getRespuestas()[j].isEmpty()) {
-                                ahorcado.getRespuestas()[j] = letra;
-                            }
+                        if (ahorcado.getRespuestas().length != 0) {
+                            String respuesta = String.valueOf(ahorcado.getRespuestas());
+                            respuesta += letra;
+
+                            respuestas = respuesta.toCharArray();
+                        } else {
+                            respuestas = new char[1];
+                            respuestas[0] = letra.charAt(0);
                         }
 
-                        palabraGuiones = "";
-                        for (int j = 0; j < ahorcado.getPalabra().length(); j++) {
-                            palabraGuiones.concat(" _ ");
-                            if (ahorcado.getPalabra().charAt(j) == letra.charAt(0)) {
-                                palabraGuiones.concat(letra);
-                            }
+                        if (ahorcado.getPalabra().charAt(i) == letra.charAt(0)) {
+                            palabraGuiones += letra;
                         }
 
                         ahorcadoActivity.getPalabraGuionesBomb().setText(palabraGuiones);
-                    } else {
-
                     }
+                    /*if (ahorcado.getIntentos() == 4) {
+                        dao.delete("ahorcado", email);
+                    } else {
+                        dao.saveAhorcado_intentos(email);
+                    }*/
                 }
+
+                dao.saveAhorcado(email, String.valueOf(respuestas), ahorcado.getIntentos());
+                dao.getAhorcado(email, "data");
             }
         });
     }
@@ -468,24 +478,21 @@ public class Controller implements ControllerInterface {
         });
     }
 
-
     // EXTRA
     private void createExtraActivityEvents() {
         dao.existsAnagrama(email);
-        CountDownTimer timer = new Contador(1000, 10000);
+        CountDownTimer timer = new Contador(10000, 1000, this.extraActivity).start();
 
-        String inputPalabra = extraActivity.getTextPalabraAnaInput().getText().toString();
-
-        this.extraActivity.getTextAnaPalabraMostrar().setText(anagrama.getPalabraUno());
-        this.extraActivity.getTextAnaCrono().setText((CharSequence) timer);
         this.extraActivity.getButtoAna().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (anagrama.palabrafinal(inputPalabra) == false) {
-                    Toast.makeText(paraulogicActivity, " ¡¡ NO, Vuelve a intentarlo", Toast.LENGTH_SHORT).show();
+                String inputPalabra = extraActivity.getTextPalabraAnaInput().getText().toString();
+
+                if (!anagrama.palabrafinal(inputPalabra)) {
+                    Toast.makeText(extraActivity, " ¡¡ NO, Vuelve a intentarlo", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(paraulogicActivity, " ¡¡ MUY BIEN !! Has acertado", Toast.LENGTH_SHORT).show();
-                    anagrama.setGanadasAna(anagrama.getGanadasAna() + 1); // STATS
+                    Toast.makeText(extraActivity, " ¡¡ MUY BIEN !! Has acertado", Toast.LENGTH_SHORT).show();
+                    dao.saveStats_anagrama(email);
                     extraActivity.recreate();
                 }
 
@@ -533,7 +540,6 @@ public class Controller implements ControllerInterface {
         });
     }
     */
-
 
     //METHODS OF SHARED PREFERENCES
     private void saveSession() {
@@ -600,13 +606,6 @@ public class Controller implements ControllerInterface {
     }
 
     public void returnCollectedData(Ahorcado ahorcado) {
-        String palabra = "";
-        for (int i = 0; i < ahorcado.getPalabra().length(); i++) {
-            palabra = palabra.concat(" _ ");
-        }
-
-        this.ahorcadoActivity.getPalabraGuionesBomb().setText(palabra);
-
         String respuesta = "";
         if (ahorcado.getRespuestas().length != 0) {
             for (int i = 0; i < ahorcado.getRespuestas().length; i++) {
@@ -615,6 +614,35 @@ public class Controller implements ControllerInterface {
         }
 
         this.ahorcadoActivity.getTextRespuestasBomb().setText(respuesta);
+
+        String palabraGuiones = "";
+
+        if (!respuesta.isEmpty()) {
+            for (int i = 0; i < ahorcado.getPalabra().length(); i++) {
+                for (int j = 0; j < respuesta.length(); j++) {
+                    if (ahorcado.getPalabra().charAt(i) != respuesta.charAt(j)) {
+                        palabraGuiones += " _ ";
+                    } else {
+                        palabraGuiones += respuesta.charAt(j);
+                    }
+                }
+            }
+        }
+
+        this.ahorcadoActivity.getPalabraGuionesBomb().setText(palabraGuiones);
+    }
+
+    public void returnCollectedDataClass(Ahorcado ahorcado) {
+        this.ahorcado = ahorcado;
+    }
+
+    public void returnCollectedData(Anagrama anagrama) {
+        this.extraActivity.getTextAnaPalabraMostrar().setText(anagrama.getPalabraUno());
+        this.extraActivity.getTextPalabraAnaDos().setText(anagrama.getPalabraDos());
+    }
+
+    public void returnCollectedDataTimer(String timer) {
+        this.extraActivity.getTextAnaCrono().setText(timer);
     }
 
     public void getSignedAccount() {

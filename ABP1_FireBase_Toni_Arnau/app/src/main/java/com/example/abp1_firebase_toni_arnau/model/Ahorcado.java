@@ -11,10 +11,17 @@ import java.util.Scanner;
 public class Ahorcado {
     private String email;
     private String palabra;
-    private String[] respuestas;
+    private char[] respuestas;
     private int intentos;
 
     public Ahorcado() {
+    }
+
+    public Ahorcado(String email, String palabra, char[] respuestas, int intentos) {
+        this.email = email;
+        this.palabra = palabra;
+        this.respuestas = respuestas;
+        this.intentos = intentos;
     }
 
     // METHOD TO GIVE A RANDOM WORD
@@ -32,7 +39,7 @@ public class Ahorcado {
         return palabra;
     }
 
-    public String[] getRespuestas() {
+    public char[] getRespuestas() {
         return respuestas;
     }
 
@@ -48,7 +55,7 @@ public class Ahorcado {
         this.palabra = palabra;
     }
 
-    public void setRespuestas(String[] respuestas) {
+    public void setRespuestas(char[] respuestas) {
         this.respuestas = respuestas;
     }
 

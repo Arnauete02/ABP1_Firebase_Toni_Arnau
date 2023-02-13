@@ -16,17 +16,17 @@ public class Anagrama {
     public Anagrama() {
     }
 
-    public Anagrama(String email, String palabraInput, String palabraGrupo, String palabraUno, String palabraDos) {
+    public Anagrama(String email, String palabraInput) {
         this.email = email;
         this.palabraInput = palabraInput;
         this.palabraGrupo = palabraGrupo();
-        this.palabraUno = palabraUno();
-        this.palabraDos = palabraDos();
+        this.palabraUno = palabraGrupo().split("-")[0];
+        this.palabraDos = palabraGrupo().split("-")[1];
         this.ganadasAna = 0;
     }
 
     public Boolean palabrafinal(String palabraInput) {
-        if (palabraInput.equals(palabraDos())) {
+        if (palabraInput.equals(this.palabraDos)) {
             return true;
         }
         return false;
@@ -39,19 +39,6 @@ public class Anagrama {
         int x = r.nextInt(matriz.length);
         String p = matriz[x];
         return p;
-    }
-
-    public String palabraUno() {
-        String []p = palabraGrupo().split("-");
-        palabraUno = p[0];
-        return palabraUno;
-    }
-
-    public String palabraDos() {
-        String []p = palabraGrupo().split("-");
-        palabraDos = p[1];
-        return palabraDos;
-
     }
 
     public void setPalabraInput(String palabraInput) {
