@@ -1,5 +1,6 @@
 package com.example.abp1_firebase_toni_arnau.controller;
 
+import static android.content.Intent.getIntent;
 import static android.provider.Settings.System.getString;
 
 import android.app.Activity;
@@ -7,7 +8,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.graphics.drawable.Drawable;
+import android.os.CountDownTimer;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
@@ -19,8 +23,12 @@ import androidx.annotation.NonNull;
 import com.example.abp1_firebase_toni_arnau.R;
 import com.example.abp1_firebase_toni_arnau.dao.Dao;
 import com.example.abp1_firebase_toni_arnau.model.Stats;
+import com.example.abp1_firebase_toni_arnau.model.Ahorcado;
+import com.example.abp1_firebase_toni_arnau.model.Anagrama;
+import com.example.abp1_firebase_toni_arnau.model.Paraula;
 import com.example.abp1_firebase_toni_arnau.model.User;
 import com.example.abp1_firebase_toni_arnau.utils.Constants;
+import com.example.abp1_firebase_toni_arnau.utils.Contador;
 import com.example.abp1_firebase_toni_arnau.view.ExtraActivity;
 import com.example.abp1_firebase_toni_arnau.utils.Providers;
 import com.example.abp1_firebase_toni_arnau.view.AhorcadoActivity;
@@ -36,16 +44,27 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
-public class Controller implements ControllerInterface{
-    public static final String default_web_client_id = "28931008152-jgtpdrmfpcdeoffse8luipdme6g3unn3.apps.googleusercontent.com";
+import org.checkerframework.checker.units.qual.A;
+
+import java.util.Arrays;
+
+public class Controller implements ControllerInterface {
+    private String email;
+
     private User user;
     private Stats stats;
     private Dao dao;
+    private Ahorcado ahorcado;
+    private Paraula paraula;
+    private Anagrama anagrama;
 
     //Definición de todas las activities como variables globales
     private MainActivity mainActivity;
@@ -62,7 +81,7 @@ public class Controller implements ControllerInterface{
 
     public static Controller getInstance() {
         if (controller == null) controller = new Controller();
-        return  controller;
+        return controller;
     }
 
     //Se instancia todas las activities en el constructor para prevenir nullPointers
@@ -79,6 +98,9 @@ public class Controller implements ControllerInterface{
         this.user = new User();
         this.stats = new Stats();
         this.dao = new Dao();
+        this.ahorcado = new Ahorcado();
+        this.paraula = new Paraula();
+        this.anagrama = new Anagrama();
     }
 
     public void mainActivity(MainActivity mainActivity) {
@@ -102,11 +124,13 @@ public class Controller implements ControllerInterface{
     public void ahorcadoActivity(AhorcadoActivity ahorcadoActivity) {
         this.ahorcadoActivity = ahorcadoActivity;
         this.ahorcadoActivity.createAllItemsAsGlobalWithGetters();
+        createAhorcadoActivityEvents();
     }
 
     public void paraulogicActivity(ParaulogicActivity paraulogicActivity) {
         this.paraulogicActivity = paraulogicActivity;
         this.paraulogicActivity.createAllItemsAsGlobalWithGetters();
+        createParaulogicActivityEvents();
     }
 
     public void perfilActivity(PerfilActivity perfilActivity) {
@@ -124,17 +148,21 @@ public class Controller implements ControllerInterface{
     public void extraActivity(ExtraActivity extraActivity) {
         this.extraActivity = extraActivity;
         this.extraActivity.createAllItemsAsGlobalWithGetters();
+        createExtraActivityEvents();
     }
 
     //METHODS OF ACTIVTIES TO CHECK EVENT'S (CLICK, ETC.)
-    private void createLoginActivityEvents(){
+
+    // LOGIN
+    private void createLoginActivityEvents() {
         SharedPreferences prefs = this.loginActivity.getSharedPreferences(
                 "PREFERENCES_FILE_KEY", Context.MODE_PRIVATE);
 
         //CHECK SESSION WITH SHEARED PREFERENCES, IF I DIDN'T DO LOG OUT
         if (checkSession()) {
             switchActivity(this.loginActivity, this.homeActivity);
-            dao.saveStats_init(checkEmail());
+            this.email = checkEmail();
+            dao.saveStats_init(this.email);
         }
 
         // REGISTER WITH EMAIL & PASSWORD
@@ -152,11 +180,13 @@ public class Controller implements ControllerInterface{
                                 @Override
                                 public void onComplete(@NonNull Task<AuthResult> task) {
                                     if (task.isSuccessful()) {
+                                        email = mail;
+
                                         saveSession();
                                         user.setEmail(mail);
                                         user.setProvider(Providers.LOGIN);
 
-                                        dao.save(user);
+                                        dao.saveLogin(user);
                                         dao.saveStats_init(mail);
                                     } else {
                                         showAlert(loginActivity, "Error en el registro.");
@@ -184,6 +214,8 @@ public class Controller implements ControllerInterface{
                                 @Override
                                 public void onComplete(@NonNull Task<AuthResult> task) {
                                     if (task.isSuccessful()) {
+                                        email = mail;
+
                                         saveSession();
                                         user.setEmail(mail);
                                         user.setProvider(Providers.LOGIN);
@@ -219,6 +251,7 @@ public class Controller implements ControllerInterface{
         });
     }
 
+    // HOME
     private void createHomeActivityEvents() {
         this.homeActivity.getBotonLogout().setOnClickListener(new View.OnClickListener() {
             @Override
@@ -265,6 +298,7 @@ public class Controller implements ControllerInterface{
         });
     }
 
+    // PROFILE
     private void createProfileActivityEvents() {
         if (checkSession()) {
             dao.getUser(checkEmail());
@@ -286,20 +320,112 @@ public class Controller implements ControllerInterface{
                 user.setProvider(Providers.valueOf(perfilActivity.getTextViewProvider().getText().toString()));
                 user.setUsername(String.valueOf(perfilActivity.getEditText_alias().getText()));
 
-                dao.save(user);
+                dao.saveLogin(user);
 
                 Toast.makeText(perfilActivity, "Se ha guardado correctamente.", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    private void createEstadisticasActivityEvents(){
-        if (checkSession()) {
-            dao.getStat(checkEmail());
-        } else {
-            dao.getStat(stats.getEmail());
-        }
+    // STATS
+    private void createEstadisticasActivityEvents() {
+        dao.getStat(email);
     }
+
+    // AHORCADO
+    private void createAhorcadoActivityEvents() {
+        dao.existsAhorcado(email);
+
+
+        this.ahorcadoActivity.getButtonBomb().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dao.getAhorcado(email, "class");
+
+                String palabraGuiones = ahorcadoActivity.getPalabraGuionesBomb().getText().toString();
+                String letra = ahorcadoActivity.getTextLetraBomb().getText().toString();
+                char[] respuestas = new char[0];
+
+
+                for (int i = 0; i < ahorcado.getPalabra().length(); i++) {
+                    palabraGuiones += " _ ";
+
+                    if (ahorcado.getPalabra().charAt(i) == letra.charAt(0)) {
+                        if (ahorcado.getRespuestas().length != 0) {
+                            String respuesta = String.valueOf(ahorcado.getRespuestas());
+                            respuesta += letra;
+
+                            respuestas = respuesta.toCharArray();
+                        } else {
+                            respuestas = new char[1];
+                            respuestas[0] = letra.charAt(0);
+                        }
+
+                        if (ahorcado.getPalabra().charAt(i) == letra.charAt(0)) {
+                            palabraGuiones += letra;
+                        }
+
+                        ahorcadoActivity.getPalabraGuionesBomb().setText(palabraGuiones);
+                    }
+                    /*if (ahorcado.getIntentos() == 4) {
+                        dao.delete("ahorcado", email);
+                    } else {
+                        dao.saveAhorcado_intentos(email);
+                    }*/
+                }
+
+                dao.saveAhorcado(email, String.valueOf(respuestas), ahorcado.getIntentos());
+                dao.getAhorcado(email, "data");
+            }
+        });
+    }
+
+    // PARAULOGIC
+    private void createParaulogicActivityEvents() {
+        dao.existsParaula(email);
+
+
+        this.paraulogicActivity.getImageViewPala().setImageResource(R.drawable.p2);
+
+        this.paraulogicActivity.getButtonPala().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String inputPalabra = paraulogicActivity.getEditTextPala().getText().toString();
+                if (paraula.palabraExiste(inputPalabra) == true) {
+                        Toast.makeText(paraulogicActivity, " ¡¡ HAS GANADO !!", Toast.LENGTH_SHORT).show();
+                        paraula.setGanadasPara(paraula.getGanadasPara() + 1);
+                        paraulogicActivity.recreate();
+                    } else {
+                        paraulogicActivity.getTextViewAcier().setText(paraula.getCount() + 1);
+                        Toast.makeText(paraulogicActivity, " ¡¡ MUY BIEN !! Has acertado", Toast.LENGTH_SHORT).show();
+                    }
+
+               }
+        });
+    }
+
+    // EXTRA
+    private void createExtraActivityEvents() {
+        dao.existsAnagrama(email);
+        CountDownTimer timer = new Contador(10000, 1000, this.extraActivity).start();
+
+        this.extraActivity.getButtoAna().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String inputPalabra = extraActivity.getTextPalabraAnaInput().getText().toString();
+
+                if (!anagrama.palabrafinal(inputPalabra)) {
+                    Toast.makeText(extraActivity, " ¡¡ NO, Vuelve a intentarlo", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(extraActivity, " ¡¡ MUY BIEN !! Has acertado", Toast.LENGTH_SHORT).show();
+                    dao.saveStats_anagrama(email);
+                    extraActivity.recreate();
+                }
+
+            }
+        });
+    }
+
 
     //METHODS OF SHARED PREFERENCES
     private void saveSession() {
@@ -365,9 +491,61 @@ public class Controller implements ControllerInterface{
         this.estadisticasActivity.getUltimasesion().setText(String.valueOf(stats.getFecha()));
     }
 
-    public void getSignedAccount(){
-        dao.save(GoogleSignIn.getLastSignedInAccount(this.loginActivity));
-        dao.saveStats_init(GoogleSignIn.getLastSignedInAccount(this.loginActivity).getEmail());
+    public void returnCollectedData(Ahorcado ahorcado) {
+        String palabra = "";
+        for (int i = 0; i < ahorcado.getPalabra().length(); i++) {
+            palabra = palabra.concat(" _ ");
+        }
+
+        this.ahorcadoActivity.getPalabraGuionesBomb().setText(palabra);
+
+        String respuesta = "";
+        if (ahorcado.getRespuestas().length != 0) {
+            for (int i = 0; i < ahorcado.getRespuestas().length; i++) {
+                respuesta += ahorcado.getRespuestas()[i];
+            }
+        }
+
+        this.ahorcadoActivity.getTextRespuestasBomb().setText(respuesta);
+
+        String palabraGuiones = "";
+
+        for (int i = 0; i < ahorcado.getPalabra().length(); i++) {
+            if (respuesta.length() != 0) {
+                for (int j = 0; j < respuesta.length(); j++) {
+                    if (ahorcado.getPalabra().charAt(i) == respuesta.charAt(j)) {
+                        palabraGuiones += respuesta.charAt(j);
+                    } else {
+                        palabraGuiones += " _ ";
+                    }
+                }
+            } else {
+                palabraGuiones += " _ ";
+            }
+
+        }
+
+        this.ahorcadoActivity.getPalabraGuionesBomb().setText(palabraGuiones);
+    }
+
+    public void returnCollectedDataClass(Ahorcado ahorcado) {
+        this.ahorcado = ahorcado;
+    }
+
+    public void returnCollectedData(Anagrama anagrama) {
+        this.extraActivity.getTextAnaPalabraMostrar().setText(anagrama.getPalabraUno());
+        this.extraActivity.getTextPalabraAnaDos().setText(anagrama.getPalabraDos());
+    }
+
+    public void returnCollectedDataTimer(String timer) {
+        this.extraActivity.getTextAnaCrono().setText(timer);
+    }
+
+    public void getSignedAccount() {
+        this.email = GoogleSignIn.getLastSignedInAccount(this.loginActivity).getEmail();
+
+        dao.saveLoginGoogle(GoogleSignIn.getLastSignedInAccount(this.loginActivity));
+        dao.saveStats_init(this.email);
 
         saveSession(GoogleSignIn.getLastSignedInAccount(this.loginActivity));
     }
