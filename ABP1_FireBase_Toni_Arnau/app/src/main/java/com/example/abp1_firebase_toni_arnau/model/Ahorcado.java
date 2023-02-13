@@ -9,72 +9,51 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class Ahorcado {
-    private User user;
-    private int ganadas;
+    private String email;
+    private String palabra;
+    private String[] respuestas;
     private int intentos;
 
     public Ahorcado() {
     }
 
-    public Ahorcado(User user, int ganadas, int intentos) {
-        this.user = user;
-        this.ganadas = ganadas;
-        this.intentos = 5;
+    // METHOD TO GIVE A RANDOM WORD
+    public String palabraRandom() {
+        String[] palabra = Constants.ahorcado;
+
+        return palabra[new Random().nextInt(palabra.length)];
     }
 
-    public char[] cambioLetraGuion(String palabraSecreta, char[] palabraGuiones) {
-        for (int i = 0; i < palabraSecreta.length(); i++) {
-            if (palabraSecreta.charAt(i) == Controller.getInstance().letraAhorcado()) {
-                palabraGuiones[i] = Controller.getInstance().letraAhorcado();
-                return palabraGuiones;
-            }
-        }
-        return null;
+    public String getEmail() {
+        return email;
     }
 
-    public String palabraFIn() {
-        String[] matriz = Constants.ahorcado;
-        Random r = new Random();
-        int x = r.nextInt(matriz.length);
-        return matriz[x];
+    public String getPalabra() {
+        return palabra;
     }
 
-    public char[] cambioGuiones(String palabra) {
-        int numletras = palabra.length();
-        char[] guiones = new char[numletras];
-
-        for (int i = 0; i < guiones.length; i++) {
-            guiones[i] = '_';
-        }
-        return guiones;
-    }
-
-    public boolean aunGuiones(char[] array) {
-        for (char c : array) {
-            if (c == '_') return true;
-        }
-        return false;
-    }
-
-    public int getGanadas() {
-        return ganadas;
+    public String[] getRespuestas() {
+        return respuestas;
     }
 
     public int getIntentos() {
         return intentos;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
-    public void setGanadas(int ganadas) {
-        this.ganadas = ganadas;
+    public void setPalabra(String palabra) {
+        this.palabra = palabra;
+    }
+
+    public void setRespuestas(String[] respuestas) {
+        this.respuestas = respuestas;
     }
 
     public void setIntentos(int intentos) {
         this.intentos = intentos;
     }
-
 }
 

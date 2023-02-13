@@ -7,6 +7,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import com.example.abp1_firebase_toni_arnau.controller.Controller;
+import com.example.abp1_firebase_toni_arnau.model.Ahorcado;
 import com.example.abp1_firebase_toni_arnau.model.Stats;
 import com.example.abp1_firebase_toni_arnau.model.User;
 import com.example.abp1_firebase_toni_arnau.utils.Providers;
@@ -31,15 +32,17 @@ public class Dao {
     private static Dao dao;
     private FirebaseFirestore db;
 
+    public Dao() {
+        this.db = FirebaseFirestore.getInstance();
+    }
+
     public static Dao getInstance() {
         if (dao == null) dao = new Dao();
         return dao;
     }
 
     // METHODS SAVE USER WITH EMAIL & PASSWORD
-    public void save(User user) {
-        db = FirebaseFirestore.getInstance();
-
+    public void saveLogin(User user) {
         HashMap<String, String> collection = new HashMap<String, String>();
 
         if (user.getName() != null) {
@@ -61,9 +64,7 @@ public class Dao {
     }
 
     // METHOD SAVE WITH GOOGLE SIGN IN
-    public void save(GoogleSignInAccount signInAccount) {
-        db = FirebaseFirestore.getInstance();
-
+    public void saveLoginGoogle(GoogleSignInAccount signInAccount) {
         HashMap<String, String> collection = new HashMap<String, String>();
 
         if (signInAccount.getDisplayName() != null) {
@@ -86,8 +87,6 @@ public class Dao {
 
     // METHOD SAVE STATS
     public void saveStats_init(String email) {
-        db = FirebaseFirestore.getInstance();
-
         HashMap<String, Object> collection = new HashMap<>();
         collection.put("numeroInicios", FieldValue.increment(1));
         collection.put("fecha", FieldValue.serverTimestamp());
@@ -97,10 +96,32 @@ public class Dao {
                 .set(collection, SetOptions.merge());
     }
 
+    // METHOD SAVE AHORCADO
+    public void saveAhorcado(String email) {
+        HashMap<String, Object> collection = new HashMap<>();
+
+        collection.put("palabra", new Ahorcado().palabraRandom());
+        collection.put("respuestas", "");
+        collection.put("intentos", 5);
+
+        db.collection("ahorcado")
+                .document(email)
+                .set(collection, SetOptions.merge());
+    }
+
+    public void saveAhorcado(String email, String respuestas, int intentos) {
+        HashMap<String, Object> collection = new HashMap<>();
+
+        collection.put("respuestas", respuestas);
+        collection.put("intentos", intentos);
+
+        db.collection("ahorcado")
+                .document(email)
+                .set(collection, SetOptions.merge());
+    }
+
     // METHOD TO GET USER
     public void getUser(String email) {
-        db = FirebaseFirestore.getInstance();
-
         db.collection("users").document(email)
                 .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
@@ -130,8 +151,6 @@ public class Dao {
 
     // METHOD TO GET STAT
     public void getStat(String email) {
-        db = FirebaseFirestore.getInstance();
-
         db.collection("stats").document(email)
                 .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
@@ -159,25 +178,51 @@ public class Dao {
                 });
     }
 
-    public void exists(String email) {
-        db = FirebaseFirestore.getInstance();
+    // METHOD TO GET AHORCADO
+    public void getAhorcado(String email) {
+        db.collection("ahorcado").document(email)
+                .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot documentSnapshot = task.getResult();
 
-        db.collection("stats").document(email)
+                            Ahorcado ahorcado = new Ahorcado();
+
+                            ahorcado.setEmail(email);
+
+                            ahorcado.setPalabra(documentSnapshot.get("palabra").toString());
+
+                            String[] respuestas = new String[documentSnapshot.get("respuestas").toString().length()];
+                            for (int i = 0; i < respuestas.length; i++) {
+                                respuestas[i] = documentSnapshot.get("respuestas").toString();
+                            }
+                            ahorcado.setRespuestas(respuestas);
+
+                            ahorcado.setIntentos(Integer.parseInt(documentSnapshot.get("intentos").toString()));
+
+                            Controller.getInstance().returnCollectedData(ahorcado);
+                        }
+                    }
+                });
+    }
+
+    public void existsAhorcado(String email) {
+        db.collection("ahorcado").document(email)
                 .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         if (documentSnapshot.exists()) {
-                            return;
+                            getAhorcado(email);
                         } else {
-
+                            saveAhorcado(email);
+                            getAhorcado(email);
                         }
                     }
                 });
     }
 
     public void delete(User user) {
-        db = FirebaseFirestore.getInstance();
-
         db.collection("users").document(user.getEmail())
                 .delete();
     }

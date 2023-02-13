@@ -43,19 +43,19 @@
 
         </androidx.cardview.widget.CardView>
 
-        <TextView
-            android:id="@+id/palabraGuionesBomb"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            android:letterSpacing="0.1"
-            android:text="@string/palabraGuiones"
-            android:textColor="@color/secondaryDarkColor"
-            android:textSize="34sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/cardView" />
+    <TextView
+        android:id="@+id/palabraGuionesBomb"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:letterSpacing="0.1"
+        android:text="@string/palabraGuiones"
+        android:textColor="@color/secondaryDarkColor"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cardView" />
 
         <androidx.cardview.widget.CardView
             android:id="@+id/cardView2"
@@ -109,7 +109,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/divider" />
 
-        <Button
+    <TextView
+        android:id="@+id/textRespuestasBomb"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textColor="@color/white"
+        app:layout_constraintStart_toStartOf="@+id/textLetraBomb"
+        app:layout_constraintTop_toBottomOf="@+id/textLetraBomb" />
+
+    <Button
             android:id="@+id/buttonBomb"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
