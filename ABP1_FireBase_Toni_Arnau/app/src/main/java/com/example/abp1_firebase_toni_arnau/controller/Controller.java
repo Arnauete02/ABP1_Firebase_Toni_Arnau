@@ -331,7 +331,6 @@ public class Controller implements ControllerInterface {
         dao.getStat(email);
     }
 
-
     // AHORCADO
     private void createAhorcadoActivityEvents() {
         dao.existsAhorcado(email);
@@ -378,66 +377,6 @@ public class Controller implements ControllerInterface {
             }
         });
     }
-
-    /*private void setAhorcado() {
-        String palabraSecreta = ahorcado.palabraFIn();
-        char[] palabraGuiones = ahorcado.cambioGuiones(palabraSecreta);
-
-        this.ahorcadoActivity.getTextViewGuiones().setText(palabraGuiones, 0, palabraGuiones.length);
-
-        this.ahorcadoActivity.getButtonBomb().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String textInput = ahorcadoActivity.getTextViewGuiones().getText().toString();
-                char[] tempGuionMostrar = ahorcado.cambioLetraGuion(palabraSecreta, palabraGuiones);
-                int x = 0;
-
-// si entra 1 letra / compara y autocambia -> error, avanza imagen, resta intento || acierto, cambia letra -> espera clickbutton
-// si entra +de1 letras -> quiere resolver / finjuego -> intentos = 0, imagen fin || gana++ -> reload
-
-                do {
-                    if (textInput.length() == 1) {
-                        if (tempGuionMostrar == null) {
-                            x++;
-                            ahorcadoActivity.getTextViewGuiones().setText(textInput);
-                            ahorcadoActivity.getImageViewBomb().setImageLevel(x);
-                            Toast.makeText(ahorcadoActivity, "OHHH... No has acertado", Toast.LENGTH_SHORT).show();
-                            ahorcado.setIntentos(ahorcado.getIntentos() - 1);
-                        } else {
-                            ahorcadoActivity.getTextViewGuiones().setText(tempGuionMostrar, 0, palabraGuiones.length);
-                            Toast.makeText(ahorcadoActivity, " ¡¡ MUY BIEN !! Has acertado", Toast.LENGTH_SHORT).show();
-                        }
-
-                    } else if (textInput.length() > 1) {
-                        if (comporbar()) {
-                            ahorcado.setGanadas(ahorcado.getGanadas() + 1);
-                            Toast.makeText(ahorcadoActivity, " ¡¡¡¡¡ HAS GANADO !!!!!", Toast.LENGTH_SHORT).show();
-                            ahorcadoActivity.finish();
-                            ahorcadoActivity.recreate();
-                        } else {
-                            Toast.makeText(ahorcadoActivity, " ¡¡¡¡¡ HAS PERDIDO !!!!!", Toast.LENGTH_SHORT).show();
-                            ahorcadoActivity.finish();
-                            ahorcadoActivity.recreate();
-                        }
-                    }
-                } while (ahorcado.aunGuiones(tempGuionMostrar) || ahorcado.getIntentos() != 0);
-            }
-        });
-
-    }*/
-
-    /*
-                if (tempGuion == null) {
-                    x++;
-                    ahorcadoActivity.getTextViewGuiones().setText(tempText);
-                    ahorcadoActivity.getImageViewBomb().setImageLevel(x);
-                    ahorcadoActivity.setImageViewBomb();
-                    Toast.makeText(ahorcadoActivity, "No has acertado", Toast.LENGTH_SHORT).show();
-
-                } else {
-                    ahorcadoActivity.getTextViewGuiones().setText(tempGuion,0,palabraGuiones.length);
-                }
-                */
 
     // PARAULOGIC
     private void createParaulogicActivityEvents() {
@@ -499,47 +438,6 @@ public class Controller implements ControllerInterface {
             }
         });
     }
-
-        /*
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        db.collection("collectionAnagrama").document(email).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                Anagrama anagrama = documentSnapshot.toObject(Anagrama.class);
-
-                String inputPalabra = extraActivity.getTextPalabraAna().getText().toString();
-                extraActivity.getTextAnaPalabra().setText(anagrama.getPalabraUno());
-                CountDownTimer timer = new CountDownTimer(10, 1000) {
-
-                    @Override
-                    public void onTick(long l) {
-                        extraActivity.getButtoAna().setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                if (anagrama.palabrafinal(inputPalabra) == false) {
-                                    Toast.makeText(paraulogicActivity, " ¡¡ NO, Vuelve a intentarlo", Toast.LENGTH_SHORT).show();
-                                } else {
-                                    Toast.makeText(paraulogicActivity, " ¡¡ MUY BIEN !! Has acertado", Toast.LENGTH_SHORT).show();
-                                    anagrama.setGanadasAna(anagrama.getGanadasAna() + 1); // STATS
-                                    extraActivity.recreate();
-                                }
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onFinish() {
-                        Toast.makeText(paraulogicActivity, " ¡¡ SE ACABÓ EL TIEMPO !!", Toast.LENGTH_SHORT).show();
-                        extraActivity.getTextAnaPalabra().setText(anagrama.palabraDos());
-                        extraActivity.recreate();
-                    }
-                };
-            }
-        });
-    }
-    */
 
     //METHODS OF SHARED PREFERENCES
     private void saveSession() {
@@ -609,7 +507,7 @@ public class Controller implements ControllerInterface {
         String respuesta = "";
         if (ahorcado.getRespuestas().length != 0) {
             for (int i = 0; i < ahorcado.getRespuestas().length; i++) {
-                respuesta += ahorcado.getRespuestas()[i] + " ";
+                respuesta += ahorcado.getRespuestas()[i];
             }
         }
 
@@ -617,16 +515,19 @@ public class Controller implements ControllerInterface {
 
         String palabraGuiones = "";
 
-        if (!respuesta.isEmpty()) {
-            for (int i = 0; i < ahorcado.getPalabra().length(); i++) {
+        for (int i = 0; i < ahorcado.getPalabra().length(); i++) {
+            if (respuesta.length() != 0) {
                 for (int j = 0; j < respuesta.length(); j++) {
-                    if (ahorcado.getPalabra().charAt(i) != respuesta.charAt(j)) {
-                        palabraGuiones += " _ ";
-                    } else {
+                    if (ahorcado.getPalabra().charAt(i) == respuesta.charAt(j)) {
                         palabraGuiones += respuesta.charAt(j);
+                    } else {
+                        palabraGuiones += " _ ";
                     }
                 }
+            } else {
+                palabraGuiones += " _ ";
             }
+
         }
 
         this.ahorcadoActivity.getPalabraGuionesBomb().setText(palabraGuiones);
