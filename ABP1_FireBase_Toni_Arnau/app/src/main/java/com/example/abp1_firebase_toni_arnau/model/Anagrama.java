@@ -5,18 +5,19 @@ import com.example.abp1_firebase_toni_arnau.utils.Constants;
 import java.util.Random;
 
 public class Anagrama {
-    private User user;
+    private String email;
     private String palabraInput;
     private String palabraGrupo;
     private String palabraUno;
     private String palabraDos;
+    private String[] respuestas;
     private int ganadasAna;
 
     public Anagrama() {
     }
 
-    public Anagrama(User user, String palabraInput, String palabraGrupo, String palabraUno, String palabraDos) {
-        this.user = user;
+    public Anagrama(String email, String palabraInput, String palabraGrupo, String palabraUno, String palabraDos) {
+        this.email = email;
         this.palabraInput = palabraInput;
         this.palabraGrupo = palabraGrupo();
         this.palabraUno = palabraUno();
@@ -53,8 +54,36 @@ public class Anagrama {
 
     }
 
-    public User getUser() {
-        return user;
+    public void setPalabraInput(String palabraInput) {
+        this.palabraInput = palabraInput;
+    }
+
+    public void setPalabraGrupo(String palabraGrupo) {
+        this.palabraGrupo = palabraGrupo;
+    }
+
+    public void setPalabraUno(String palabraUno) {
+        this.palabraUno = palabraUno;
+    }
+
+    public void setPalabraDos(String palabraDos) {
+        this.palabraDos = palabraDos;
+    }
+
+    public String[] getRespuestas() {
+        return respuestas;
+    }
+
+    public void setRespuestas(String[] respuestas) {
+        this.respuestas = respuestas;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getEmail() {
+        return email;
     }
 
     public String getPalabraInput() {
