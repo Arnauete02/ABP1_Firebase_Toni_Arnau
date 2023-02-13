@@ -21,31 +21,15 @@ public class Paraula {
         this.numPalabras = numPalabras;
     }
 
-    public int tamañoMatriz() {
-        int t = escogePartida().length;
-        return t;
-    }
-
-    public int escogerJuego() {
-        String[][] matriz = Constants.paraulogics;
-        Random r = new Random();
-        int x = (int) (r.nextInt() * 100);
-        return x;
-    }
-
-    public String[] escogePartida() {
-        int num = escogerJuego();
-        String[][] matriz = Constants.paraulogics;
-        String[] partida = matriz[num];
-        return partida;
-    }
 
     public boolean palabraExiste(String palabraInput) {
-        String[] temp = escogePartida();
-        for (String m : temp) {
-            if (m.equals(palabraInput)) {
-                count++;
-                return true;
+        String[][] matriz = Constants.paraulogics;
+        for (String[] m : matriz) {
+            for(String n : m) {
+                if (m.equals(palabraInput)) {
+                    count++;
+                    return true;
+                }
             }
         }
         return false;

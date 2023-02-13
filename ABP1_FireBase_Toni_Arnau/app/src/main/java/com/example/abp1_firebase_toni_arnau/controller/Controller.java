@@ -385,19 +385,13 @@ public class Controller implements ControllerInterface {
         dao.existsAnagrama(email);
 
 
-        if(paraula.escogerJuego() == 0){
-            this.paraulogicActivity.getImageViewPala().setImageResource(R.drawable.p1);
-
-        } else {
-            this.paraulogicActivity.getImageViewPala().setImageResource(R.drawable.p2);
-        }
+        this.paraulogicActivity.getImageViewPala().setImageResource(R.drawable.p2);
 
         this.paraulogicActivity.getButtonPala().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String inputPalabra = paraulogicActivity.getEditTextPala().getText().toString();
                 if (paraula.palabraExiste(inputPalabra) == true) {
-                    if (paraula.getCount() == paraula.tamañoMatriz()) {
                         Toast.makeText(paraulogicActivity, " ¡¡ HAS GANADO !!", Toast.LENGTH_SHORT).show();
                         paraula.setGanadasPara(paraula.getGanadasPara() + 1);
                         paraulogicActivity.recreate();
@@ -406,9 +400,7 @@ public class Controller implements ControllerInterface {
                         Toast.makeText(paraulogicActivity, " ¡¡ MUY BIEN !! Has acertado", Toast.LENGTH_SHORT).show();
                     }
 
-
-                }
-            }
+               }
         });
     }
 
@@ -433,7 +425,6 @@ public class Controller implements ControllerInterface {
             }
         });
     }
-
 
 
     //METHODS OF SHARED PREFERENCES
