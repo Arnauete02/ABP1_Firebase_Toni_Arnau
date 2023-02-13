@@ -2,23 +2,19 @@ package com.example.abp1_firebase_toni_arnau.view;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.abp1_firebase_toni_arnau.R;
 import com.example.abp1_firebase_toni_arnau.controller.Controller;
-import com.example.abp1_firebase_toni_arnau.view.ViewActivity;
 
 public class ExtraActivity extends AppCompatActivity implements ViewActivity {
 
-    private EditText textPalabraAna;
+    private EditText textPalabraAnaInput;
     private TextView textAnaCrono;
-    private TextView textAnaPalabra;
+    private TextView textAnaPalabraMostrar;
     private Button buttoAna;
 
     @Override
@@ -36,41 +32,25 @@ public class ExtraActivity extends AppCompatActivity implements ViewActivity {
 
     @Override
     public void createAllItemsAsGlobalWithGetters() {
-        textPalabraAna = findViewById(R.id.textPalabraAna);
+        textPalabraAnaInput = findViewById(R.id.textPalabraAnaInput);
         textAnaCrono = findViewById(R.id.textAnaCrono);
-        textAnaPalabra = findViewById(R.id.textAnaPalabra);
+        textAnaPalabraMostrar = findViewById(R.id.textPalabraAnaMostrar);
         buttoAna = findViewById(R.id.buttonAna);
     }
 
-    public EditText getTextPalabraAna() {
-        return textPalabraAna;
-    }
-
-    public void setTextPalabraAna(EditText textPalabraAna) {
-        this.textPalabraAna = textPalabraAna;
+    public EditText getTextPalabraAnaInput() {
+        return textPalabraAnaInput;
     }
 
     public TextView getTextAnaCrono() {
         return textAnaCrono;
     }
 
-    public void setTextAnaCrono(TextView textAnaCrono) {
-        this.textAnaCrono = textAnaCrono;
-    }
-
-    public TextView getTextAnaPalabra() {
-        return textAnaPalabra;
-    }
-
-    public void setTextAnaPalabra(TextView textAnaPalabra) {
-        this.textAnaPalabra = textAnaPalabra;
+    public TextView getTextAnaPalabraMostrar() {
+        return textAnaPalabraMostrar;
     }
 
     public Button getButtoAna() {
         return buttoAna;
-    }
-
-    public void setButtoAna(Button buttoAna) {
-        this.buttoAna = buttoAna;
     }
 }

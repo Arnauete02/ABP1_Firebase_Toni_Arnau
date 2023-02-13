@@ -27,6 +27,7 @@ import com.example.abp1_firebase_toni_arnau.model.Anagrama;
 import com.example.abp1_firebase_toni_arnau.model.Paraula;
 import com.example.abp1_firebase_toni_arnau.model.User;
 import com.example.abp1_firebase_toni_arnau.utils.Constants;
+import com.example.abp1_firebase_toni_arnau.utils.Contador;
 import com.example.abp1_firebase_toni_arnau.view.ExtraActivity;
 import com.example.abp1_firebase_toni_arnau.utils.Providers;
 import com.example.abp1_firebase_toni_arnau.view.AhorcadoActivity;
@@ -471,8 +472,30 @@ public class Controller implements ControllerInterface {
     // EXTRA
     private void createExtraActivityEvents() {
         dao.existsAnagrama(email);
+        CountDownTimer timer = new Contador(1000, 10000);
 
+        String inputPalabra = extraActivity.getTextPalabraAnaInput().getText().toString();
+
+        this.extraActivity.getTextAnaPalabraMostrar().setText(anagrama.getPalabraUno());
+        this.extraActivity.getTextAnaCrono().setText((CharSequence) timer);
+        this.extraActivity.getButtoAna().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (anagrama.palabrafinal(inputPalabra) == false) {
+                    Toast.makeText(paraulogicActivity, " ¡¡ NO, Vuelve a intentarlo", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(paraulogicActivity, " ¡¡ MUY BIEN !! Has acertado", Toast.LENGTH_SHORT).show();
+                    anagrama.setGanadasAna(anagrama.getGanadasAna() + 1); // STATS
+                    extraActivity.recreate();
+                }
+
+            }
+        });
+    }
+
+        /*
         FirebaseFirestore db = FirebaseFirestore.getInstance();
+
         db.collection("collectionAnagrama").document(email).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
 
             @Override
@@ -509,6 +532,7 @@ public class Controller implements ControllerInterface {
             }
         });
     }
+    */
 
 
     //METHODS OF SHARED PREFERENCES

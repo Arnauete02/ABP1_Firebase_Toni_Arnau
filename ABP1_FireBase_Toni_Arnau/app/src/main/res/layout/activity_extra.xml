@@ -54,7 +54,7 @@
         app:layout_constraintTop_toBottomOf="@+id/cardView">
 
         <TextView
-            android:id="@+id/textAnaPalabra"
+            android:id="@+id/textPalabraAnaMostrar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="50dp"
@@ -95,7 +95,7 @@
         tools:layout_editor_absoluteX="20dp" />
 
     <EditText
-        android:id="@+id/textPalabraAna"
+        android:id="@+id/textPalabraAnaInput"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ems="10"
@@ -117,6 +117,6 @@
         android:text="@string/textPalaBoton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textPalabraAna" />
+        app:layout_constraintTop_toBottomOf="@+id/textPalabraAnaInput" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
