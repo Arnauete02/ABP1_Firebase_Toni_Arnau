@@ -57,22 +57,37 @@ public class Paraula {
         m.add(input);
     }
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
     public int getGanadasPara() {
         return ganadasPara;
+    }
+
+    public void setGanadasPara(int ganadasPara) {
+        this.ganadasPara = ganadasPara;
+    }
+
+    public int getNumPalabras() {
+        return numPalabras;
+    }
+
+    public void setNumPalabras(int numPalabras) {
+        this.numPalabras = numPalabras;
     }
 
     public int getCount() {
         return count;
     }
 
-    public void setGanadasPara(int ganadas) {
-        this.ganadasPara = ganadas;
-    }
-
     public void setCount(int count) {
         this.count = count;
     }
-
 }
 
 

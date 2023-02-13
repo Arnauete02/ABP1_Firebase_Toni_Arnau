@@ -218,41 +218,118 @@ public class Dao {
     // --------------------------------------------------------------------------------------------
     // ANAGRAMA
 
-    public void agregarAnagrama(Anagrama anagrama) {
-        boolean hecho = false;
+    public void saveAnagrama(Anagrama anagrama) {
         HashMap<String, Object> collectionAnagrama = new HashMap<String, Object>();
-        collectionAnagrama.put("palabrabraUno", anagrama.getPalabraUno().toString());
-        collectionAnagrama.put("palabraDos", anagrama.getPalabraDos().toString());
-        collectionAnagrama.put("ganadas", anagrama.getGanadasAna());
 
-        db.collection("anagrama").document(anagrama.getUser().getEmail()).set(collectionAnagrama, SetOptions.merge());
+        if (anagrama.getPalabraUno() != null) {
+            collectionAnagrama.put("palabraUno", anagrama.getPalabraUno());
+        } else {
+            collectionAnagrama.put("palabraUno", null);
+        }
+
+        if (anagrama.getPalabraDos() != null) {
+            collectionAnagrama.put("palabraDos", anagrama.getPalabraDos());
+        } else {
+            collectionAnagrama.put("palabraDos", null);
+        }
+
+
+           db.collection("anagrama").document(anagrama.getUser().getEmail()).set(collectionAnagrama, SetOptions.merge());
+        }
+
+        public Task<DocumentSnapshot> getAnagrama (String email){
+            return db.collection("collectionAnagrama").document(email).get();
+        }
+
+    public void savePalabra(Paraula paraula) {
+        HashMap<String, Object> collectionParaula = new HashMap<String, Object>();
+
+        /* if (paraula.getNumPalabras() != null) {
+            collectionParaula.put("numPalabras", paraula.getNumPalabras());
+        } else {
+            collectionParaula.put("numPalabras", null);
+        }
+
+        if (paraula.getCount() != null) {
+            collectionParaula.put("count", paraula.getCount());
+        } else {
+            collectionParaula.put("count", null);
+        }
+
+
+        db.collection("palabra").document(paraula.getUser().getEmail()).set(collectionParaula, SetOptions.merge());
+
+    */
     }
 
-    public Task<DocumentSnapshot> getAnagrama(String email) {
-        return db.collection("collectionAnagrama").document(email).get();
+    public Task<DocumentSnapshot> getPalabra (String email){
+        return db.collection("collectionPalabra").document(email).get();
     }
+
+
+
+    public void agregarParaula (Paraula paraula){
+            HashMap<String, Object> collectionAnagrama = new HashMap<String, Object>();
+            collectionAnagrama.put("count", paraula.getCount());
+            collectionAnagrama.put("numPalabras", paraula.getNumPalabras());
+            collectionAnagrama.put("ganadasPara", paraula.getGanadasPara());
+
+            db.collection("palabra").document(paraula.getUser().getEmail()).set(collectionAnagrama, SetOptions.merge());
+        }
+
+        public Task<DocumentSnapshot> getParaula (String email){
+            return db.collection("collectionParaula").document(email).get();
+        }
 
 // ____--------------------------------------------------------------------
 
 
+        public void existsAhorcado (String email){
+            db.collection("ahorcado").document(email)
+                    .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            if (documentSnapshot.exists()) {
+                                getAhorcado(email);
+                            } else {
+                                saveAhorcado(email);
+                                getAhorcado(email);
+                            }
+                        }
+                    });
+        }
 
-    public void existsAhorcado(String email) {
-        db.collection("ahorcado").document(email)
+        public void existsAnagrama (String email){
+            db.collection("anagrama").document(email)
+                    .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            if (documentSnapshot.exists()) {
+                                getAnagrama(email);
+                            } else {
+                                //saveAnagrama(email);
+                                getAnagrama(email);
+                            }
+                        }
+                    });
+        }
+    public void existsParaula (String email){
+        db.collection("paraula").document(email)
                 .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         if (documentSnapshot.exists()) {
-                            getAhorcado(email);
+                            getParaula(email);
                         } else {
-                            saveAhorcado(email);
-                            getAhorcado(email);
+                            //saveParaula(email);
+                            getParaula(email);
                         }
                     }
                 });
     }
 
-    public void delete(User user) {
-        db.collection("users").document(user.getEmail())
-                .delete();
+        public void delete (User user){
+            db.collection("users").document(user.getEmail())
+                    .delete();
+        }
     }
-}

@@ -430,6 +430,7 @@ public class Controller implements ControllerInterface {
 
     // PARAULOGIC
     private void createParaulogicActivityEvents() {
+        dao.existsAnagrama(email);
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("collectionParau").document(email).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
@@ -469,44 +470,42 @@ public class Controller implements ControllerInterface {
 
     // EXTRA
     private void createExtraActivityEvents() {
+        dao.existsAnagrama(email);
+
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("collectionAnagrama").document(email).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
 
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                if (documentSnapshot.exists()) {
-                    Anagrama anagrama = documentSnapshot.toObject(Anagrama.class);
+                Anagrama anagrama = documentSnapshot.toObject(Anagrama.class);
 
-                    String inputPalabra = extraActivity.getTextPalabraAna().getText().toString();
-                    extraActivity.getTextAnaPalabra().setText(anagrama.getPalabraUno());
-                    CountDownTimer timer = new CountDownTimer(10, 1000) {
+                String inputPalabra = extraActivity.getTextPalabraAna().getText().toString();
+                extraActivity.getTextAnaPalabra().setText(anagrama.getPalabraUno());
+                CountDownTimer timer = new CountDownTimer(10, 1000) {
 
-                        @Override
-                        public void onTick(long l) {
-                            extraActivity.getButtoAna().setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    if (anagrama.palabrafinal(inputPalabra) == false) {
-                                        Toast.makeText(paraulogicActivity, " ¡¡ NO, Vuelve a intentarlo", Toast.LENGTH_SHORT).show();
-                                    } else {
-                                        Toast.makeText(paraulogicActivity, " ¡¡ MUY BIEN !! Has acertado", Toast.LENGTH_SHORT).show();
-                                        anagrama.setGanadasAna(anagrama.getGanadasAna() + 1); // STATS
-                                        extraActivity.recreate();
-                                    }
+                    @Override
+                    public void onTick(long l) {
+                        extraActivity.getButtoAna().setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                if (anagrama.palabrafinal(inputPalabra) == false) {
+                                    Toast.makeText(paraulogicActivity, " ¡¡ NO, Vuelve a intentarlo", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(paraulogicActivity, " ¡¡ MUY BIEN !! Has acertado", Toast.LENGTH_SHORT).show();
+                                    anagrama.setGanadasAna(anagrama.getGanadasAna() + 1); // STATS
+                                    extraActivity.recreate();
                                 }
-                            });
-                        }
+                            }
+                        });
+                    }
 
-                        @Override
-                        public void onFinish() {
-                            Toast.makeText(paraulogicActivity, " ¡¡ SE ACABÓ EL TIEMPO !!", Toast.LENGTH_SHORT).show();
-                            extraActivity.getTextAnaPalabra().setText(anagrama.palabraDos());
-                            extraActivity.recreate();
-                        }
-                    };
-                } else {
-                    Anagrama anagrama = new Anagrama();
-                }
+                    @Override
+                    public void onFinish() {
+                        Toast.makeText(paraulogicActivity, " ¡¡ SE ACABÓ EL TIEMPO !!", Toast.LENGTH_SHORT).show();
+                        extraActivity.getTextAnaPalabra().setText(anagrama.palabraDos());
+                        extraActivity.recreate();
+                    }
+                };
             }
         });
     }
