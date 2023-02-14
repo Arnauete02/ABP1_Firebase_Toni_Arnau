@@ -384,23 +384,40 @@ public class Controller implements ControllerInterface {
     private void createParaulogicActivityEvents() {
         dao.existsParaula(email);
 
-
-        this.paraulogicActivity.getImageViewPala().setImageResource(R.drawable.p2);
+        this.paraulogicActivity.getImageViewPala().setImageLevel(paraula.eleccion());
+        this.paraulogicActivity.getTextViewAcier().setText(paraula.getCount());
 
         this.paraulogicActivity.getButtonPala().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String inputPalabra = paraulogicActivity.getEditTextPala().getText().toString();
-                if (paraula.palabraExiste(inputPalabra) == true) {
-                        Toast.makeText(paraulogicActivity, " ¡¡ HAS GANADO !!", Toast.LENGTH_SHORT).show();
-                        paraula.setGanadasPara(paraula.getGanadasPara() + 1);
-                        paraulogicActivity.recreate();
-                    } else {
-                        paraulogicActivity.getTextViewAcier().setText(paraula.getCount() + 1);
-                        Toast.makeText(paraulogicActivity, " ¡¡ MUY BIEN !! Has acertado", Toast.LENGTH_SHORT).show();
-                    }
+                dao.getParaula(email, "class");
 
-               }
+                String inputPalabra = paraulogicActivity.getEditTextPala().getText().toString();
+                String[] matriz = paraula.escogeJuego();
+
+                if (paraula.getNumPalabras() != matriz.length) {
+                    if (paraula.siExiste(inputPalabra)) {
+                        if (paraula.ocurrencia(matriz, inputPalabra) == true) {
+                            Toast.makeText(paraulogicActivity, " ¡¡ HAS ACERTADO !!", Toast.LENGTH_SHORT).show();
+                            paraulogicActivity.getTextViewAcier().setText(paraula.getCount() + 1);
+                        } else {
+                            Toast.makeText(paraulogicActivity, " ¡¡ OHHHH NUEVA PALABRA !!", Toast.LENGTH_SHORT).show();
+                            paraula.setRespuestas(paraula.respAñadida(inputPalabra));
+                            dao.saveParaula(email);
+                            dao.saveStats_paraula(email);
+                        }
+                    } else {
+                        Toast.makeText(paraulogicActivity, " ¡¡ NO VALIDA!!", Toast.LENGTH_SHORT).show();
+
+                    }
+                } else {
+                    Toast.makeText(paraulogicActivity, " ¡¡ HAS GANADO !!", Toast.LENGTH_SHORT).show();
+                    dao.saveStats_paraula(email);
+                    paraulogicActivity.finish();
+                    dao.delete("paraula", email);
+                    paraulogicActivity.recreate();
+                }
+            }
         });
     }
 
@@ -419,6 +436,8 @@ public class Controller implements ControllerInterface {
                 } else {
                     Toast.makeText(extraActivity, " ¡¡ MUY BIEN !! Has acertado", Toast.LENGTH_SHORT).show();
                     dao.saveStats_anagrama(email);
+                    extraActivity.finish();
+                    dao.delete("anagrama", email);
                     extraActivity.recreate();
                 }
 
@@ -535,6 +554,10 @@ public class Controller implements ControllerInterface {
     public void returnCollectedData(Anagrama anagrama) {
         this.extraActivity.getTextAnaPalabraMostrar().setText(anagrama.getPalabraUno());
         this.extraActivity.getTextPalabraAnaDos().setText(anagrama.getPalabraDos());
+    }
+
+    public void returnCollectedData(Paraula paraula) {
+        this.paraulogicActivity.getTextViewAcier().setText(paraula.getCount());
     }
 
     public void returnCollectedDataTimer(String timer) {
