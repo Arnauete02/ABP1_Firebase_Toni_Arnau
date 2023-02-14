@@ -336,6 +336,10 @@ public class Controller implements ControllerInterface {
     private void createAhorcadoActivityEvents() {
         dao.existsAhorcado(email);
 
+        String guiones = ahorcado.cambioGuiones(ahorcado.palabraRandom()).toString();
+
+        this.ahorcadoActivity.getImageBomb().setImageResource(R.drawable.listpara);
+        this.ahorcadoActivity.getPalabraGuionesBomb().setText(guiones);
 
         this.ahorcadoActivity.getButtonBomb().setOnClickListener(new View.OnClickListener() {
             @Override
@@ -345,9 +349,65 @@ public class Controller implements ControllerInterface {
                 String palabraGuiones = ahorcadoActivity.getPalabraGuionesBomb().getText().toString();
                 String letra = ahorcadoActivity.getTextLetraBomb().getText().toString();
                 char[] respuestas = new char[0];
+                char[] palabraConGuiones = ahorcado.getPalabraConGuiones();
 
+                if (ahorcado.getIntentos() != 0 && ahorcado.aunGuiones(palabraConGuiones)) {
+                    if (letra.length() == 1) {
+                        for (int i = 0; i < ahorcado.getPalabra().length(); i++) {
+                            if (ahorcado.getPalabra().charAt(i) == letra.charAt(0)) {
+                                palabraConGuiones[i] = letra.charAt(i);
+                                Toast.makeText(ahorcadoActivity, " ¡¡ HAS ACERTADO !!", Toast.LENGTH_SHORT).show();
 
-                for (int i = 0; i < ahorcado.getPalabra().length(); i++) {
+                            } else {
+                                Toast.makeText(ahorcadoActivity, " ¡¡ HAS FALLADO !!", Toast.LENGTH_SHORT).show();
+                                ahorcado.setIntentos(ahorcado.getIntentos() - 1);
+                                ahorcadoActivity.getImageBomb().setImageLevel(+1);
+                            }
+                        }
+
+                    } else if (letra.length() > 1) {
+                        Toast.makeText(ahorcadoActivity, " ¡¡ Vamos a Comprobar !!", Toast.LENGTH_SHORT).show();
+
+                        for (int i = 0; i < ahorcado.getPalabra().length(); i++) {
+                            for (int j = 0; j < palabraGuiones.length(); j++) {
+                                if (ahorcado.getPalabra().charAt(i) == palabraGuiones.charAt(j)) {
+                                    Toast.makeText(ahorcadoActivity, " ¡¡ HAS GANADO !!", Toast.LENGTH_SHORT).show();
+                                    ahorcadoActivity.getPalabraGuionesBomb().setText(ahorcado.palabraRandom());
+                                } else {
+                                    Toast.makeText(ahorcadoActivity, " ¡¡ HAS PERDIDO !!", Toast.LENGTH_SHORT).show();
+                                    dao.saveAhorcado(email, String.valueOf(respuestas), ahorcado.getIntentos());
+                                    dao.getAhorcado(email, "data");
+                                    dao.delete("palabra", email);
+                                    ahorcadoActivity.recreate();
+                                }
+                            }
+                        }
+                    } else {
+                        Toast.makeText(ahorcadoActivity, " ¡¡ Introduce una letra !!", Toast.LENGTH_SHORT).show();
+
+                    }
+                } else if (ahorcado.getIntentos() != 0 && !ahorcado.aunGuiones(palabraConGuiones)) {
+                    Toast.makeText(ahorcadoActivity, " ¡¡ HAS GANADO !!", Toast.LENGTH_SHORT).show();
+                    //partida ganada
+                    dao.saveStats_ahorcado(email);
+                } else {
+                    Toast.makeText(ahorcadoActivity, " ¡¡ HAS PERDIDO !!", Toast.LENGTH_SHORT).show();
+                    dao.saveAhorcado(email, String.valueOf(respuestas), ahorcado.getIntentos());
+                    dao.getAhorcado(email, "data");
+                    dao.delete("palabra", email);
+                    ahorcadoActivity.recreate();
+
+                }
+            }
+        });
+    }
+    /*
+                    for(
+                int i = 0; i<ahorcado.getPalabra().
+                    length();
+                    i++)
+
+                {
                     palabraGuiones += " _ ";
 
                     if (ahorcado.getPalabra().charAt(i) == letra.charAt(0)) {
@@ -367,18 +427,17 @@ public class Controller implements ControllerInterface {
 
                         ahorcadoActivity.getPalabraGuionesBomb().setText(palabraGuiones);
                     }
-                    /*if (ahorcado.getIntentos() == 4) {
-                        dao.delete("ahorcado", email);
-                    } else {
-                        dao.saveAhorcado_intentos(email);
-                    }*/
-                }
+                        /*if (ahorcado.getIntentos() == 4) {
+                            dao.delete("ahorcado", email);
+                        } else {
+                            dao.saveAhorcado_intentos(email);
+                        }
 
-                dao.saveAhorcado(email, String.valueOf(respuestas), ahorcado.getIntentos());
-                dao.getAhorcado(email, "data");
-            }
-        });
-    }
+
+                    dao.saveAhorcado(email,String.valueOf(respuestas),ahorcado.getIntentos());
+                    dao.getAhorcado(email,"data");
+
+    */
 
     // PARAULOGIC
     private void createParaulogicActivityEvents() {
