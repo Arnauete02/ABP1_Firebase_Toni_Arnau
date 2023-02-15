@@ -336,6 +336,10 @@ public class Controller implements ControllerInterface {
     private void createAhorcadoActivityEvents() {
         dao.existsAhorcado(email);
 
+        String guiones = ahorcado.cambioGuiones(ahorcado.palabraRandom()).toString();
+
+        this.ahorcadoActivity.getImageBomb().setImageResource(R.drawable.listpara);
+        this.ahorcadoActivity.getPalabraGuionesBomb().setText(guiones);
 
         this.ahorcadoActivity.getButtonBomb().setOnClickListener(new View.OnClickListener() {
             @Override
@@ -345,37 +349,55 @@ public class Controller implements ControllerInterface {
                 String palabraGuiones = ahorcadoActivity.getPalabraGuionesBomb().getText().toString();
                 String letra = ahorcadoActivity.getTextLetraBomb().getText().toString();
                 char[] respuestas = new char[0];
+                char[] palabraConGuiones = ahorcado.getPalabraConGuiones();
 
+                if (ahorcado.getIntentos() != 0 && ahorcado.aunGuiones(palabraConGuiones)) {
+                    if (letra.length() == 1) {
+                        for (int i = 0; i < ahorcado.getPalabra().length(); i++) {
+                            if (ahorcado.getPalabra().charAt(i) == letra.charAt(0)) {
+                                palabraConGuiones[i] = letra.charAt(i);
+                                Toast.makeText(ahorcadoActivity, " ¡¡ HAS ACERTADO !!", Toast.LENGTH_SHORT).show();
 
-                for (int i = 0; i < ahorcado.getPalabra().length(); i++) {
-                    palabraGuiones += " _ ";
-
-                    if (ahorcado.getPalabra().charAt(i) == letra.charAt(0)) {
-                        if (ahorcado.getRespuestas().length != 0) {
-                            String respuesta = String.valueOf(ahorcado.getRespuestas());
-                            respuesta += letra;
-
-                            respuestas = respuesta.toCharArray();
-                        } else {
-                            respuestas = new char[1];
-                            respuestas[0] = letra.charAt(0);
+                            } else {
+                                Toast.makeText(ahorcadoActivity, " ¡¡ HAS FALLADO !!", Toast.LENGTH_SHORT).show();
+                                ahorcado.setIntentos(ahorcado.getIntentos() - 1);
+                                ahorcadoActivity.getImageBomb().setImageLevel(+1);
+                            }
                         }
 
-                        if (ahorcado.getPalabra().charAt(i) == letra.charAt(0)) {
-                            palabraGuiones += letra;
-                        }
+                    } else if (letra.length() > 1) {
+                        Toast.makeText(ahorcadoActivity, " ¡¡ Vamos a Comprobar !!", Toast.LENGTH_SHORT).show();
 
-                        ahorcadoActivity.getPalabraGuionesBomb().setText(palabraGuiones);
-                    }
-                    /*if (ahorcado.getIntentos() == 4) {
-                        dao.delete("ahorcado", email);
+                        for (int i = 0; i < ahorcado.getPalabra().length(); i++) {
+                            for (int j = 0; j < palabraGuiones.length(); j++) {
+                                if (ahorcado.getPalabra().charAt(i) == palabraGuiones.charAt(j)) {
+                                    Toast.makeText(ahorcadoActivity, " ¡¡ HAS GANADO !!", Toast.LENGTH_SHORT).show();
+                                    ahorcadoActivity.getPalabraGuionesBomb().setText(ahorcado.palabraRandom());
+                                } else {
+                                    Toast.makeText(ahorcadoActivity, " ¡¡ HAS PERDIDO !!", Toast.LENGTH_SHORT).show();
+                                    dao.saveAhorcado(email, String.valueOf(respuestas), ahorcado.getIntentos());
+                                    dao.getAhorcado(email, "data");
+                                    dao.delete("palabra", email);
+                                    ahorcadoActivity.recreate();
+                                }
+                            }
+                        }
                     } else {
-                        dao.saveAhorcado_intentos(email);
-                    }*/
-                }
+                        Toast.makeText(ahorcadoActivity, " ¡¡ Introduce una letra !!", Toast.LENGTH_SHORT).show();
 
-                dao.saveAhorcado(email, String.valueOf(respuestas), ahorcado.getIntentos());
-                dao.getAhorcado(email, "data");
+                    }
+                } else if (ahorcado.getIntentos() != 0 && !ahorcado.aunGuiones(palabraConGuiones)) {
+                    Toast.makeText(ahorcadoActivity, " ¡¡ HAS GANADO !!", Toast.LENGTH_SHORT).show();
+                    //partida ganada
+                    dao.saveStats_ahorcado(email);
+                } else {
+                    Toast.makeText(ahorcadoActivity, " ¡¡ HAS PERDIDO !!", Toast.LENGTH_SHORT).show();
+                    dao.saveAhorcado(email, String.valueOf(respuestas), ahorcado.getIntentos());
+                    dao.getAhorcado(email, "data");
+                    dao.delete("palabra", email);
+                    ahorcadoActivity.recreate();
+
+                }
             }
         });
     }
@@ -384,23 +406,40 @@ public class Controller implements ControllerInterface {
     private void createParaulogicActivityEvents() {
         dao.existsParaula(email);
 
-
-        this.paraulogicActivity.getImageViewPala().setImageResource(R.drawable.p2);
+        this.paraulogicActivity.getImageViewPala().setImageLevel(paraula.eleccion());
+        this.paraulogicActivity.getTextViewAcier().setText(paraula.getCount());
 
         this.paraulogicActivity.getButtonPala().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String inputPalabra = paraulogicActivity.getEditTextPala().getText().toString();
-                if (paraula.palabraExiste(inputPalabra) == true) {
-                        Toast.makeText(paraulogicActivity, " ¡¡ HAS GANADO !!", Toast.LENGTH_SHORT).show();
-                        paraula.setGanadasPara(paraula.getGanadasPara() + 1);
-                        paraulogicActivity.recreate();
-                    } else {
-                        paraulogicActivity.getTextViewAcier().setText(paraula.getCount() + 1);
-                        Toast.makeText(paraulogicActivity, " ¡¡ MUY BIEN !! Has acertado", Toast.LENGTH_SHORT).show();
-                    }
+                dao.getParaula(email, "class");
 
-               }
+                String inputPalabra = paraulogicActivity.getEditTextPala().getText().toString();
+                String[] matriz = paraula.escogeJuego();
+
+                if (paraula.getNumPalabras() != matriz.length) {
+                    if (paraula.siExiste(inputPalabra)) {
+                        if (paraula.ocurrencia(matriz, inputPalabra) == true) {
+                            Toast.makeText(paraulogicActivity, " ¡¡ HAS ACERTADO !!", Toast.LENGTH_SHORT).show();
+                            paraulogicActivity.getTextViewAcier().setText(paraula.getCount() + 1);
+                        } else {
+                            Toast.makeText(paraulogicActivity, " ¡¡ OHHHH NUEVA PALABRA !!", Toast.LENGTH_SHORT).show();
+                            paraula.setRespuestas(paraula.respAñadida(inputPalabra));
+                            dao.saveParaula(email);
+                            dao.saveStats_paraula(email);
+                        }
+                    } else {
+                        Toast.makeText(paraulogicActivity, " ¡¡ NO VALIDA!!", Toast.LENGTH_SHORT).show();
+
+                    }
+                } else {
+                    Toast.makeText(paraulogicActivity, " ¡¡ HAS GANADO !!", Toast.LENGTH_SHORT).show();
+                    dao.saveStats_paraula(email);
+                    paraulogicActivity.finish();
+                    dao.delete("paraula", email);
+                    paraulogicActivity.recreate();
+                }
+            }
         });
     }
 
@@ -419,6 +458,8 @@ public class Controller implements ControllerInterface {
                 } else {
                     Toast.makeText(extraActivity, " ¡¡ MUY BIEN !! Has acertado", Toast.LENGTH_SHORT).show();
                     dao.saveStats_anagrama(email);
+                    extraActivity.finish();
+                    dao.delete("anagrama", email);
                     extraActivity.recreate();
                 }
 
@@ -454,6 +495,7 @@ public class Controller implements ControllerInterface {
         switchActivity(this.homeActivity, this.mainActivity);
     }
 
+    // CHECKS
     private boolean checkSession() {
         SharedPreferences prefs = this.loginActivity.getSharedPreferences("PREFERENCES_FILE_KEY", Context.MODE_PRIVATE);
         String email = prefs.getString("email", null);
@@ -476,7 +518,7 @@ public class Controller implements ControllerInterface {
         return provider;
     }
 
-    //OTHER METHODS
+    //RETURN METHODS
     public void returnCollectedData(User user) {
         this.perfilActivity.getEditText_mail_perfil().setText(user.getEmail());
         this.perfilActivity.getEditText_nombre().setText(user.getName());
@@ -537,9 +579,15 @@ public class Controller implements ControllerInterface {
         this.extraActivity.getTextPalabraAnaDos().setText(anagrama.getPalabraDos());
     }
 
+    public void returnCollectedData(Paraula paraula) {
+        this.paraulogicActivity.getTextViewAcier().setText(paraula.getCount());
+    }
+
     public void returnCollectedDataTimer(String timer) {
         this.extraActivity.getTextAnaCrono().setText(timer);
     }
+
+    //OYHER METHODS
 
     public void getSignedAccount() {
         this.email = GoogleSignIn.getLastSignedInAccount(this.loginActivity).getEmail();

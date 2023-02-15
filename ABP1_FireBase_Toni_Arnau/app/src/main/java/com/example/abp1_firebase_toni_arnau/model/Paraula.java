@@ -2,37 +2,85 @@ package com.example.abp1_firebase_toni_arnau.model;
 
 import com.example.abp1_firebase_toni_arnau.utils.Constants;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 public class Paraula {
     private String email;
-    private int ganadasPara;
     private int numPalabras;
     private int count;
-    private String imagen;
+    private String[] respuestas;
+    private String[][] matriz;
+    private char[] p1 = {'p', 'r', 'a', 'n', 'i', 'o'};
+    private char[] p2 = {'t', 'e', 'l', 'd', 'o', 's', 'a'};
+
 
     public Paraula() {
     }
 
-    public Paraula(User user, int ganadas, int numPalabras, int count) {
+    public Paraula(String email, int numPalabras, int count) {
         this.email = email;
-        this.ganadasPara = ganadasPara;
+        this.numPalabras = Constants.paraulogics.length;
         this.count = count;
-        this.numPalabras = numPalabras;
+        this.matriz = Constants.paraulogics;
     }
 
+    public boolean siExiste(String palabraIn) {
+        String p1String = p1.toString();
+        String p2String = p2.toString();
 
-    public boolean palabraExiste(String palabraInput) {
-        String[][] matriz = Constants.paraulogics;
-        for (String[] m : matriz) {
-            for(String n : m) {
-                if (m.equals(palabraInput)) {
-                    count++;
-                    return true;
+        if (eleccion() == 1) {
+            for (int i = 0; i < palabraIn.length(); i++) {
+                for (int j = 0; j < p1String.length(); j++) {
+                    if (palabraIn.charAt(i) == p1String.charAt(j)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        } else {
+            for (int i = 0; i < palabraIn.length(); i++) {
+                for (int j = 0; j < p2String.length(); j++) {
+                    if (palabraIn.charAt(i) == p2String.charAt(j)) {
+                        return true;
+                    }
                 }
             }
         }
         return false;
+    }
+
+
+    public int eleccion() {
+        Random num = new Random();
+        int ale = num.nextInt(2) + 1;
+        return ale;
+    }
+
+    public String[] escogeJuego() {
+        int ale = eleccion();
+        String[][] matriz = Constants.paraulogics;
+        return matriz[ale];
+    }
+
+    public boolean ocurrencia(String[] matriz, String palabra) {
+        for (String n : matriz) {
+            if (n.contains(palabra)) {
+                count++;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public String[] respAñadida(String palagra) {
+        int num = eleccion();
+        String[] resp = Constants.paraulogics[num];
+        ArrayList<String> temp = new ArrayList<>();
+        Arrays.asList(temp);
+        temp.add(palagra);
+        return (String[]) temp.toArray();
     }
 
     public String getEmail() {
@@ -41,14 +89,6 @@ public class Paraula {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public int getGanadasPara() {
-        return ganadasPara;
-    }
-
-    public void setGanadasPara(int ganadasPara) {
-        this.ganadasPara = ganadasPara;
     }
 
     public int getNumPalabras() {
@@ -67,15 +107,14 @@ public class Paraula {
         this.count = count;
     }
 
-    public Object getImagen() {
-        return imagen;
+    public String[] getRespuestas() {
+        return respuestas;
     }
 
-    public void setImagen(String imagen) {
-        this.imagen = imagen;
+    public void setRespuestas(String[] respuestas) {
+        this.respuestas = respuestas;
     }
 }
-
 
 
 
