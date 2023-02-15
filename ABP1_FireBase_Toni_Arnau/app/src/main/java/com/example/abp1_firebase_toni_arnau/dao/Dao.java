@@ -125,6 +125,16 @@ public class Dao {
                 .set(collection, SetOptions.merge());
     }
 
+    public void saveStats_paraula(String email) {
+        HashMap<String, Object> collection = new HashMap<>();
+
+        collection.put("ganadasParaula", FieldValue.increment(1));
+
+        db.collection("stats")
+                .document(email)
+                .set(collection, SetOptions.merge());
+    }
+
     // METHOD SAVE AHORCADO
     public void saveAhorcado(String email) {
         HashMap<String, Object> collection = new HashMap<>();
@@ -172,6 +182,27 @@ public class Dao {
                 .document(email)
                 .set(collectionAnagrama, SetOptions.merge());
     }
+
+    public void saveParaula(String email, int numPalabras, int count) {
+        HashMap<String, Object> collectionParaula = new HashMap<>();
+
+        collectionParaula.put("numPalabras", numPalabras);
+        collectionParaula.put("contador", count);
+
+        db.collection("palabra").document(email).set(collectionParaula, SetOptions.merge());
+    }
+
+    public void saveParaula(String email) {
+        HashMap<String, Object> collectionParaula = new HashMap<>();
+        Paraula paraula = new Paraula();
+
+        collectionParaula.put("numPalabras", paraula.getNumPalabras());
+        collectionParaula.put("contador", paraula.getCount());
+
+        db.collection("palabra").document(email).set(collectionParaula, SetOptions.merge());
+    }
+
+    // -----------------------------------------------------------------------------------------
 
     // METHOD TO GET USER
     public void getUser(String email) {
@@ -276,50 +307,46 @@ public class Dao {
                             switch (type) {
                                 case "data":
                                     Controller.getInstance().returnCollectedData(anagrama);
+
                             }
                         }
                     }
                 });
     }
 
-    public void saveParaula(String email, int numPalabras, int count) {
-        HashMap<String, Object> collectionParaula = new HashMap<>();
+    // METHOD TO GET PARAULA
+    public void getParaula(String email, String type) {
+        db.collection("anagrama").document(email)
+                .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot documentSnapshot = task.getResult();
 
-        collectionParaula.put("numPalabras", numPalabras);
-        collectionParaula.put("contador", count);
+                            Paraula paraula = new Paraula();
 
-        db.collection("ahorcado").document(email).set(collectionParaula, SetOptions.merge());
-    }
+                            paraula.setEmail(email);
 
-    public void saveParaula(String email) {
-        HashMap<String, Object> collectionAnagrama = new HashMap<>();
+                            paraula.setNumPalabras((Integer) documentSnapshot.get("numPalabras"));
 
-        collectionAnagrama.put("numPalabras", new Anagrama().palabraGrupo());
-        collectionAnagrama.put("count", 0);
+                            paraula.setCount((Integer) documentSnapshot.get("count"));
 
-        db.collection("ahorcado")
-                .document(email)
-                .set(collectionAnagrama, SetOptions.merge());
-    }
+                            paraula.setRespuestas((String[]) documentSnapshot.get("respuestas"));
 
-    public void agregarParaula(Paraula paraula) {
-        HashMap<String, Object> collectionAnagrama = new HashMap<String, Object>();
-        collectionAnagrama.put("count", paraula.getCount());
-        collectionAnagrama.put("numPalabras", paraula.getNumPalabras());
+                            Controller.getInstance().returnCollectedData(paraula);
 
-        db.collection("palabra").document(paraula.getEmail()).set(collectionAnagrama, SetOptions.merge());
-    }
+                            switch (type) {
+                                case "data":
+                                    Controller.getInstance().returnCollectedData(paraula);
 
-    public Task<DocumentSnapshot> getParaula(String email) {
-        return db.collection("collectionParaula").document(email).get();
-    }
-
-    public Task<DocumentSnapshot> getPalabra(String email) {
-        return db.collection("collectionPalabra").document(email).get();
+                            }
+                        }
+                    }
+                });
     }
 
 
-// --------------------------------------------------------------------------
+    //  EXISTS   --------------------------------------------------------------
 
     public void existsAhorcado(String email) {
         db.collection("ahorcado").document(email)
@@ -357,14 +384,16 @@ public class Dao {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         if (documentSnapshot.exists()) {
-                            getParaula(email);
+                            getParaula(email, "data");
                         } else {
                             saveParaula(email);
-                            getParaula(email);
+                            getParaula(email, "data");
                         }
                     }
                 });
     }
+
+    //DELETE
 
     public void delete(String collectionPath, String email) {
         db.collection(collectionPath).document(email)

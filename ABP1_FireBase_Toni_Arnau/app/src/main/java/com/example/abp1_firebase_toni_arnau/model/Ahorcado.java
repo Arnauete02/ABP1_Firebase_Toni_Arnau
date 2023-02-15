@@ -13,15 +13,17 @@ public class Ahorcado {
     private String palabra;
     private char[] respuestas;
     private int intentos;
+    char[] palabraConGuiones;
 
     public Ahorcado() {
     }
 
     public Ahorcado(String email, String palabra, char[] respuestas, int intentos) {
         this.email = email;
-        this.palabra = palabra;
+        this.palabra = palabraRandom();
         this.respuestas = respuestas;
-        this.intentos = intentos;
+        this.intentos = 5;
+        this.palabraConGuiones = cambioGuiones(this.palabra);
     }
 
     // METHOD TO GIVE A RANDOM WORD
@@ -30,6 +32,23 @@ public class Ahorcado {
 
         return palabra[new Random().nextInt(palabra.length)];
     }
+
+    public   char[] cambioGuiones (String palabra){
+        char[] guiones = new char[palabra.length()];
+
+        for (int i = 0; i < guiones.length; i++) {
+            guiones[i] = '_';
+        }
+        return guiones;
+    }
+
+    public   boolean aunGuiones(char[]array){
+        for(char c:array){
+            if(c=='_')return true;
+        }
+        return false;
+    }
+
 
     public String getEmail() {
         return email;
@@ -62,5 +81,8 @@ public class Ahorcado {
     public void setIntentos(int intentos) {
         this.intentos = intentos;
     }
-}
 
+    public char[] getPalabraConGuiones() {
+        return palabraConGuiones;
+    }
+}
